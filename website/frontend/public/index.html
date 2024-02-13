@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What's Happenin</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap">
+    <style>
+        /* Your CSS code here */
+        /* https://codepen.io/DuskoStamenic/pen/ZEvBKdw */
+        :root {
+            --color: rgb(255, 255, 255);
+        }
+
+        body {
+            margin: 0;
+            font-family: Poppins, sans-serif;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+      
+            text-align: center;
+        }
+
+        .parallax-container {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+    align-items: center;
+    background-image:linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('../public/images/wh_landingpage_background.jpeg');
+    background-position: center;
+    background-size: cover;
+    color: var(--color);
+    row-gap: .1rem;
+  
+  
+}
+
+.parallax-container2 {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+    align-items: center;
+    background-position: center;
+    background-size: cover;
+    color: var(--color);
+    row-gap: .1rem;
+    background-color: #54a7ff;
+    
+}
+.parallax-container3 {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+    align-items: center;
+    background-position: center;
+    background-size: cover;
+    color: var(--color);
+    row-gap: .1rem;
+    background-color: #ff54d7;
+    
+}
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 700;
+        }
+
+        p {
+            max-width: 52ch;
+            padding: 1em;
+            line-height: 1.5;
+        }
+
+        a {
+            display: inline-block;
+            padding: 1em 3.5em;
+            border-radius: 0.3em;
+            background-color: var(--color);
+            color: white;
+            font-size: 0.875rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-decoration: none;
+            text-transform: uppercase;
+        }
+
+        h3 {
+            margin-top: 1em;
+            font-size: 1.6rem;
+            font-weight: 700;
+        }
+
+        .logo {
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+}
+.logo img {
+            max-height: 80px; 
+        }
+
+     
+
+.small-paragraph {
+    font-size: 1.5rem;
+    font-weight: bold; 
+    margin-top: 0px; 
+    margin-bottom: 0px; 
+    text-align: center; 
+}
+
+.big-paragraph {
+    font-size: 2.3rem; 
+    font-weight: bold; 
+    margin-top: -10px; 
+    margin-bottom: -10px; 
+}
+
+.button {
+  background-color: #aba500; 
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline;
+  font-size: 16px;
+}
+.search-container {
+    display: flex;
+    align-items: center;
+}
+
+.left-image {
+    width: 50px; 
+    height: auto; 
+    margin-right: 10px; 
+}
+
+.search-bar {
+    width: 100%; 
+    padding: 10px; 
+    border: 1px solid #ccc; 
+    border-radius: 5px; 
+    font-size: 16px; 
+}
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); 
+    grid-gap: 20px;
+}
+
+.image-container {
+    width: 100%; 
+}
+
+.image-container img {
+    width: 100%; 
+    height: auto; 
+}
+
+    </style>
+</head>
+
+    <section class="parallax-container">
+        <header>
+            <div class="logo">
+                <img src="../public/images/wh_logo.png" alt="logo">
+            </div>
+        </header> 
+        <p class="small-paragraph">
+           Explore. Immerse. Discover. 
+        </p>
+        <p class="big-paragraph">
+          City Insights at <br> Your FingerTips
+        </p>
+        <p class="small-paragraph">
+        Stay informed with curated news articles tailored to your city's interests. Explore local headlines and dive deep into what matters most to you.
+        </p>
+        <a href="#page2" class="button">Start Exploring</a>
+    </div>
+    </section>
+    <section id="page2" class="parallax-container2">
+        <div class="search-container">
+            <img src="../public/images/wh_calendar_image.jpeg" alt="Image" class="left-image">
+            <input type="text" placeholder="Search..." class="search-bar">
+        </div>
+      </section>
+
+     <section id="page3" class="parallax-container3">
+    <header>
+        <h2>Filler Header</h2>
+    </header>
+    <div class="grid-container">
+        <div class="image-container">
+            <img src="image1.jpg" alt="Image 1">
+        </div>
+        <div class="image-container">
+            <img src="image2.jpg" alt="Image 2">
+        </div>
+        <div class="image-container">
+            <img src="image3.jpg" alt="Image 3">
+        </div>
+        <div class="image-container">
+            <img src="image4.jpg" alt="Image 4">
+        </div>
+    </div>
+</section>
+
+    
