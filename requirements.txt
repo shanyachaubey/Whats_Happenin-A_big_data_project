@@ -1,0 +1,6 @@
+requests
+pandas
+string
+json
+re
+nltk
