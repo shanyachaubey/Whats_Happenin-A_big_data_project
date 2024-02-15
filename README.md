@@ -25,9 +25,8 @@ The website will use the interactive action on the map and date filters to trigg
 2) User selects the date range.
 3) Bubble chart gets generated on the left/right of the map displaying: Category, % of news articles in that category, The bubbles and the category names are both clickable links.
 4) Along with the Bubble chart a list of Top n statistics from all the news articles considered in the search are also displayed.
-5) User clicks on one of the categories (Either by clicking on the Bubble or the name of the category), the map, bubble chart and stats decrease in size and the majority of the screen becomes a grid view of top articles in that category from that location within given date range. These news articles will be displayed like a tile, with the title, date and an optional image within the tile.
+5) User clicks on one of the categories (Either by clicking on the Bubble or the name of the category), the stats get updated based on the category chosen by user and the top articles in that category from that location within given date range appear in the "Top Articles" section. These news articles will be displayed like a tile, with the title, date and an optional image within the tile.
 6) The tiles must be clickable links to the original news article.
-7) When user scrolls up from the tiles, the map, bubble chart and statistics must increase in size again.
 
 ## Technical Process details
 
@@ -35,10 +34,11 @@ This section will describe how each of the above 8 steps get executed from a tec
 
 ## Contributors
 
-Shanya Chaubey, Masters in Data Science at University of Colorado Boulder - shch4240@colorado.edu, chaubeyshanya@gmail.com
-Justin Jamrowski, Bachelors in Computer Science at University of Colorado Boulder -
-Lohith Ramesh, Masters in Data Science at University of Colorado Boulder - lora4841@colorado.edu, rlohith007@gmail.com
-Niharika Ng, Masters in Applied Mathematics at University of Colorado Boulder
+1) Shanya Chaubey, Masters in Data Science at University of Colorado Boulder - shch4240@colorado.edu, chaubeyshanya@gmail.com
+2) Justin Jamrowski, Bachelors in Computer Science at University of Colorado Boulder -
+3) Lohith Ramesh, Masters in Data Science at University of Colorado Boulder - lora4841@colorado.edu, rlohith007@gmail.com
+4) Niharika Ng, Masters in Applied Mathematics at University of Colorado Boulder - nina335@colorado.edu
+5) Bill Martynowicks, Bachelores in Computer Science at University of Colorado Boulder - wima1605@colorado.edu
 
 
 
