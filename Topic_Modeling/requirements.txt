@@ -4,3 +4,7 @@ string
 json
 re
 nltk
+spacy
+itertools
+scikit-learn
+typing
