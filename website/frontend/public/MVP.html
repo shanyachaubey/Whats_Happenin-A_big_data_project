@@ -52,12 +52,14 @@
 </head>
 
 <script>
-    $(function() {
+    
+    var startDate = null;
+    var endDate= null;
 
+    $(function() {
         var currentDate = new Date();
         var fiveYearsAgo = new Date();
         fiveYearsAgo.setFullYear(currentDate.getFullYear() - 5);
-
 
         $("#start-date").datepicker({
             dateFormat: "yy-mm-dd",
@@ -65,11 +67,14 @@
             maxDate: "+0d",
             changeMonth: true,
             changeYear: true,
-            onSelect: function(selectedDate) {
-                $("#end-date").datepicker("option", "minDate", selectedDate);  
+            onSelect: function(startDate) {
+                $("#end-date").datepicker("option", "minDate", startDate);
+                // Update global variable with selected date
+                window.selectedDate = startDate;
+                // Log selected date to console
+                console.log("Start date:", startDate);
             }
         });
-
 
         $("#end-date").datepicker({
             dateFormat: "yy-mm-dd",
@@ -77,12 +82,16 @@
             maxDate: "+0d", 
             changeMonth: true,
             changeYear: true,
-            onSelect: function(selectedDate) {
-                $("#start-date").datepicker("option", "maxDate", selectedDate); 
+            onSelect: function(endDate) {
+                $("#start-date").datepicker("option", "maxDate", endDate);
+                // Update global variable with selected date
+                window.selectedDate = endDate;
+                // Log selected date to console
+                console.log("End date:", endDate);
             }
         });
     });
-    </script>
+</script>
 <body>
     <div class="container">
         <div class="row">
