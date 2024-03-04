@@ -54,9 +54,11 @@
 <script>
     var startDate=null;
     var EndDate=null;
+    
+    var startDate = null;
+    var endDate= null;
+
     $(function() {
-        //
-        //
         var currentDate = new Date();
         var fiveYearsAgo = new Date();
         fiveYearsAgo.setFullYear(currentDate.getFullYear() - 5);
@@ -69,8 +71,10 @@
             changeYear: true,
             onSelect: function(startDate) {
                 $("#end-date").datepicker("option", "minDate", startDate);
-                window.selectedStartDate = startDate; // Store selected start date globally
-                console.log("Selected start date:", startDate); // Log selected start date
+                // Update global variable with selected date
+                window.selectedDate = startDate;
+                // Log selected date to console
+                console.log("Start date:", startDate);
             }
         });
 
@@ -82,8 +86,10 @@
             changeYear: true,
             onSelect: function(endDate) {
                 $("#start-date").datepicker("option", "maxDate", endDate);
-                window.selectedEndDate = endDate; // Store selected end date globally
-                console.log("Selected end date:", endDate); // Log selected end date
+                // Update global variable with selected date
+                window.selectedDate = endDate;
+                // Log selected date to console
+                console.log("End date:", endDate);
             }
         });
     });
