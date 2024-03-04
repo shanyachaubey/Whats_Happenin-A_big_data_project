@@ -13,8 +13,14 @@ const App = () => {
 
   const handleBubbleClick = (label) => {
     console.log(`Bubble ${label} is clicked`);
-   
+    // Scroll to a new section on the same page when a bubble is clicked
+    const element = document.getElementById('containers'); // Specify the ID of the new section
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' }); // Smooth scroll to the new section
+    }
   };
+
+
 
   const handleLegendClick = (label) => {
     console.log(`Legend ${label} is clicked`);
