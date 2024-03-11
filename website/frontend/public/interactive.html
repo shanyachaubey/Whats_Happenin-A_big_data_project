@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8' />
+  <title>Mapbox Marker with Address Example</title>
+  <meta name='viewport' content='width=device-width, initial-scale=1' />
+  <script src='https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.js'></script>
+  <link href='https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.css' rel='stylesheet' />
+  <style>
+    /* Add some styling to the map container */
+    #map {
+      width: 100%;
+      height: 400px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Create a div to hold the map -->
+  <div id='map'></div>
+
+  <!-- Create a div to display the address -->
+  <div id='address'></div>
+
+  <script>
+    mapboxgl.accessToken = 'pk.eyJ1IjoiamFtcm93c2tpIiwiYSI6ImNsbzd3ampoMjA4Y3Aybm8zbHdqNDYxMmQifQ.Dl3WZ3jX4FKgS40ge9Je7Q';
+    var map = new mapboxgl.Map({
+      container: 'map',
+      style: 'mapbox://styles/mapbox/streets-v11',
+      center: [-105.2705, 40.0150],
+      zoom: 9
+    });
+
+    var marker = null; // Variable to hold the marker
+
+    // Add a marker and display address when the map is clicked
+    map.on('click', function(e) {
+      // Check if a marker already exists
+      if (marker) {
+        // Remove the existing marker from the map
+        marker.remove();
+        marker = null; // Reset the marker variable
+        document.getElementById('address').innerText = ''; // Clear the address display
+      } else {
+        // Create a marker at the clicked coordinates
+        marker = new mapboxgl.Marker()
+          .setLngLat(e.lngLat) // Set the marker coordinates based on the click event
+          .addTo(map); // Add the marker to the map
+
+        // Perform reverse geocoding to get the address
+        fetch('https://api.mapbox.com/geocoding/v5/mapbox.places/' + e.lngLat.lng + ',' + e.lngLat.lat + '.json?access_token=' + mapboxgl.accessToken)
+          .then(response => response.json())
+          .then(data => {
+            // Display the address in the 'address' div
+            document.getElementById('address').innerText = data.features[0].place_name;
+          });
+      }
+    });
+  </script>
+</body>
+</html>
