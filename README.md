@@ -38,7 +38,7 @@ This section will describe how each of the above 8 steps get executed from a tec
 2) Justin Jamrowski, Bachelors in Computer Science at University of Colorado Boulder -
 3) Lohith Ramesh, Masters in Data Science at University of Colorado Boulder - lora4841@colorado.edu, rlohith007@gmail.com
 4) Niharika Ng, Masters in Applied Mathematics at University of Colorado Boulder - nina335@colorado.edu
-5) Bill Martynowicks, Bachelores in Computer Science at University of Colorado Boulder - wima1605@colorado.edu
+5) Bill Martynowicz, Bachelors in Computer Science at University of Colorado Boulder - wima1605@colorado.edu
 
 
 

@@ -1,0 +1,24 @@
+
+.bubble-chart {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  
+  .bubble {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 5px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.3s ease; 
+  }
+  
+  .bubble:hover {
+    transform: scale(1.1); 
+  }
+  
