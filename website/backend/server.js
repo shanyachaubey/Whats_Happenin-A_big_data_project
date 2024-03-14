@@ -78,7 +78,9 @@ app.get('/submitFormData', (req, res) => {
   res.send("Data received successfully.");
 });
 // other routes...
-
+//
+//
+//
 // starting the server and keeping the connection open to listen for more requests
 const PORT = process.env.PORT || 3000; // Use the PORT environment variable if set, otherwise use 3000
 app.listen(PORT, () => {
