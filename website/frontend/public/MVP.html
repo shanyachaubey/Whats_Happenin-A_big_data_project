@@ -71,7 +71,6 @@
     </nav>
     
 </head>
-
 <script>
     var selectedCity = null;
     var startDate = null;
@@ -108,16 +107,56 @@
             }
         });
 
+        // Initially, disable the submit button
+        $('#submit-btn').prop('disabled', true);
+
+        // Listener for input changes
+        $("#search-input, #start-date, #end-date").on('input', function() {
+            selectedCity = $("#search-input").val();
+            startDate = $("#start-date").val();
+            endDate = $("#end-date").val();
+            checkSubmitAvailability();
+        });
+    });
+
+    function checkSubmitAvailability() {
+        if (selectedCity && startDate && endDate) {
+            $('#submit-btn').prop('disabled', false);
+        } else {
+            $('#submit-btn').prop('disabled', true);
+        }
+    }
+
+    $(document).ready(function() {
         $("#submit-btn").click(function() {
             selectedCity = $("#search-input").val();
             console.log("Selected city:", selectedCity);
             console.log("Start date:", startDate);
             console.log("End date:", endDate);
-            // You can perform additional actions here if needed
-        });
 
-        // Initially, disable the submit button
-        $('#submit-btn').prop('disabled', true);
+            // Check if all necessary data is available
+            if (selectedCity && startDate && endDate) {
+                $.ajax({
+                    type: "GET",
+                    url: "http://localhost:3000/submitFormData",
+                    data: {
+                        startDate: startDate,
+                        endDate: endDate,
+                        location: selectedCity
+                    },
+                    success: function(response) {
+                        // Handle success response if needed
+                        console.log("GET request successful.");
+                    },
+                    error: function(xhr, status, error) {
+                        // Handle error response if needed
+                        console.error("Error:", error);
+                    }
+                });
+            } else {
+                console.log("Please fill in all required fields.");
+            }
+        });
 
         // Listener for ReactJS bubbles click event
         $('iframe').on('load', function() {
@@ -132,15 +171,8 @@
             });
         });
     });
-
-    function checkSubmitAvailability() {
-        if (selectedCity && startDate && endDate) {
-            $('#submit-btn').prop('disabled', false);
-        } else {
-            $('#submit-btn').prop('disabled', true);
-        }
-    }
 </script>
+
 
 <body>
     <div class="container">
