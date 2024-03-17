@@ -1,10 +1,19 @@
 requests
 pandas
-string
-json
-re
-nltk
+numpy
+# string
+# json
+# re
+# nltk
 spacy
-itertools
 scikit-learn
-typing
+# typing
+# hdbscan
+# bertopic
+# transformers
+# ctransformers
+fastapi[all]
+pydantic==1.9
+pymongo[srv]==3.11.0
+python-dotenv==0.19.2
+

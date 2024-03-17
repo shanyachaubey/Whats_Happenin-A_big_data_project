@@ -1,4 +1,5 @@
 // importing the dependencies
+//yoooo
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
@@ -67,9 +68,19 @@ app.post('/add_review', function (req, res) {
       return console.log(err);
     });
 });
+app.get('/submitFormData', (req, res) => {
+  const startDate = req.query.startDate;
+  const endDate = req.query.endDate;
+  const location = req.query.location;
 
+  // Process the data as needed
+  console.log("Received data:", { startDate, endDate, location });
+  res.send("Data received successfully.");
+});
 // other routes...
-
+//
+//
+//
 // starting the server and keeping the connection open to listen for more requests
 const PORT = process.env.PORT || 3000; // Use the PORT environment variable if set, otherwise use 3000
 app.listen(PORT, () => {
