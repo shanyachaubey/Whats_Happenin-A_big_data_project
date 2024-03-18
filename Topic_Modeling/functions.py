@@ -21,6 +21,11 @@ from itertools import combinations
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
+# Modules for topic modeling
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.decomposition import LatentDirichletAllocation
+import joblib
+
 def get_cities(latitude, longitude):
 
     """
@@ -245,7 +250,7 @@ def process_shrink_data(articles, location):
     """
     
     #initializing nlp object
-    nlp = spacy.load("en_core_web_sm")
+    nlp = spacy.load(".venv\Lib\site-packages\en_core_web_sm\en_core_web_sm-3.0.0")
     sentencizer = Sentencizer()
     nlp.add_pipe('sentencizer', before = "parser")
     
@@ -268,6 +273,11 @@ def process_shrink_data(articles, location):
                                     if not token.is_punct and not token.is_space])
         return processed_string
     
+    # UNCOMMENT BELOW WHEN SKLEARN RESOLVED Loading the model
+    lda_model = joblib.load('model.pkl')
+    vectorizer = joblib.load('countvectorizer.pkl')
+   
+
     location = location
     processed_articles = []
     for item in articles:
@@ -286,6 +296,26 @@ def process_shrink_data(articles, location):
         
         #Get summary
         summary = process_string(item.summary)
+
+        # UNCOMMENT BELOW WHEN NEEDED Getting topic, using LDA
+        category_names = {
+                    0: "Technology",
+                    1: "Environment/Nature",
+                    2: "Social Issues",
+                    3: "Infrastructure",
+                    4: "Entertainment",
+                    5: "Health",
+                    6: "Economy",
+                    7: "Science",
+                    8: "Education",
+                    9: "Government"
+                }
+        
+        text = f"{title} {excerpt} {summary}"
+        X_test = vectorizer.transform([text])
+        predicted_categories = lda_model.transform(X_test)
+        category_idx = np.argmax(predicted_categories)
+        topic = category_names[category_idx]
         
         processed_article = {
             "rank": int(item.rank),
@@ -297,9 +327,9 @@ def process_shrink_data(articles, location):
             "author": str(item.author),
             "published_date": item.published_date[:10],
             "image_link": item.media,
-            "topic": "sports" #This will come from Niharika's model
+            "topic": topic #This will come from Niharika's model
         }
-        # SHANYA INSERT NIHARIKA'S MODEL HERE
+        
         processed_articles.append(processed_article)
 
     articles_json = {
@@ -313,7 +343,7 @@ def process_shrink_data(articles, location):
     articles_json['articles'] = [articles_json['articles'][i] for i in unique_indices]
 
     #REMOVE BELOW PRINT STATEMENT WHEN DONE TESTING
-    print(len(articles_json['articles']))
+    #print(len(articles_json['articles']))
     json_output = json.dumps(articles_json, ensure_ascii=False)
 
     return json_output
@@ -343,8 +373,8 @@ def get_top_x(data, top_x=2):
     top_10_indices = {}
 
     for i, article in enumerate(data["articles"]):
-        topic = article["topic"]
-        topics.setdefault(topic, []).append((i, article["rank"]))
+        topic = article.topic
+        topics.setdefault(topic, []).append((i, article.rank))
     
     for topic, articles in topics.items():
         articles.sort(key=lambda x:x[1])
