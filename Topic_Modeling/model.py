@@ -13,7 +13,6 @@ with open('existing_dataset.json', 'r') as f:
 new_labeled_data = []
 
 
-
 # Combine Datasets
 combined_data = existing_data + new_labeled_data
 
