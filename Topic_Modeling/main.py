@@ -3,7 +3,8 @@ from pymongo import MongoClient
 from bson import ObjectId 
 from pydantic import BaseModel
 from typing import List, Optional
-from functions import process_shrink_data, get_top_x
+from functions import process_shrink_data
+import json
 
 # Connect to MongoDB
 client = MongoClient('mongodb://localhost:27017/')
@@ -63,8 +64,6 @@ def get_articles_using_oid(oid: str) -> List[Article]:
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
-
-
 # Function to fetch the location from MongoDB
 def get_location_using_oid(oid:str) -> str:
     try:
@@ -77,17 +76,59 @@ def get_location_using_oid(oid:str) -> str:
             return "Prateek check"
     except Exception as e:
         raise HTTPException(status_code=500, details=str(e))
+    
 
-@app.get("/location")
-async def get_location(oid: str = Query(..., description="Object ID of the document to fetch articles for")):
-    location = get_location_using_oid(oid)
-    return location
-
-
-@app.get("/articles")
-async def get_articles(oid: str = Query(..., description="Object ID of the document to fetch articles for")):
+@app.put("/articles")
+async def update_mongo(oid: str = Query(..., description="Object ID of the document to fetch articles for")):
+    """
+    
+    """
     articles = get_articles_using_oid(oid)
     location = get_location_using_oid(oid)
     articles = process_shrink_data(articles, location)
-    #articles = get_top_x(articles,2)
-    return articles
+    
+    try:
+        articles_json = json.loads(articles)
+    except json.JSONDecodeError as e:
+        raise HTTPException(status_code=500, detail = "Error decoding JSON: "+ str(e))
+    
+    article_list = articles_json["articles"]
+
+    topics_count = {}
+    total = len(article_list)
+
+    for article in article_list:
+        topic = article.get("topic")
+        if topic in topics_count:
+            topics_count[topic] += 1
+        else:
+            topics_count[topic] = 1
+    
+    topics_proportion = {topic:(count/total)*100 for topic, count in topics_count.items()}
+
+
+    
+    # Setting the top_x number to be able to change this later
+    top_x = 10
+
+    topics = set(article.get("topic") for article in article_list)
+    top_x_all_cat = sorted(range(len(article_list)), key = lambda i: article_list[i].get("rank"))[:top_x]
+
+    top_x_by_topics = {topic: [] for topic in topics}
+    
+    for topic in topics:
+        articles_by_topic = [article for article in article_list if article.get("topic") == topic]
+        top_x_topic = sorted(articles_by_topic, key=lambda x: x.get("rank"), reverse=False)[:top_x]
+        top_x_indices = [article_list.index(article) for article in top_x_topic]
+        top_x_by_topics[topic] = top_x_indices
+
+    update_query = {
+        "$set":{
+            "articles":article_list,
+            "top_x_all_cat": top_x_all_cat,
+            "top_10_by_topics": top_x_by_topics,
+            "data_for_bubble": topics_proportion
+        }
+    }
+    collection.update_one({"_id": ObjectId(oid)}, update_query)  
+    
