@@ -15,13 +15,10 @@ function Navigation() {
           <Navbar.Collapse id="navbarNav">
             <Nav className="justify-content-center">
               <Nav.Item>
-                <Nav.Link href = "/">Home</Nav.Link>
+                <Nav.Link href = "/MVP">Explore</Nav.Link>
               </Nav.Item>
               <Nav.Item>
                 <Nav.Link href = "/About_US">About Us</Nav.Link>
-              </Nav.Item>
-              <Nav.Item>
-                <Nav.Link href="/Contact_US">Contact Us</Nav.Link>
               </Nav.Item>
             </Nav>
           </Navbar.Collapse>
