@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: express-app
+  labels:
+    app: express-app
+spec:
+  replicas: 1  # Adjust the number of replicas as needed
+  selector:
+    matchLabels:
+      app: express-app
+  template:
+    metadata:
+      labels:
+        app: express-app
+    spec:
+      containers:
+      - name: express-app
+        image: jamrowski/express:v9.0  # Replace with your actual image
+        ports:
+        - containerPort: 3000

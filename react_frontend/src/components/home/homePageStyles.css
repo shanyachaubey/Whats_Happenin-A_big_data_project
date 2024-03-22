@@ -1,0 +1,119 @@
+:root {
+    --color: rgb(255, 255, 255);
+}
+
+body {
+    font-family: Poppins, sans-serif;
+    padding: 0;
+    margin: 0;
+}
+
+.parallax-container {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+    align-items: flex-start;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('../../utils/images/wh_landingpage_background.jpeg');
+    background-position: center;
+    background-size: cover;
+    color: var(--color);
+    row-gap: .3rem;
+}
+
+
+h1 {
+    font-size: 3rem;
+    font-weight: 700;
+}
+
+p {
+    max-width: 52ch;
+    line-height: 1.5;
+}
+
+a {
+    display: inline-block;
+    padding: 1em 3.5em;
+    border-radius: 0.3em;
+
+    font-size: 0.875rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-decoration: none;
+    text-transform: uppercase;
+}
+
+h3 {
+    margin-top: 1em;
+    font-size: 1.6rem;
+    font-weight: 700;
+}
+
+.logo {
+    position: absolute; 
+    top: 0; 
+    left: 0; 
+}
+
+.logo img {
+    max-height: 90px; 
+    outline: none;
+    border-radius: 10px;
+
+}
+
+.small-paragraph {
+    font-size: 1.7rem;
+    font-weight: bold; 
+    text-align: left;
+}
+
+.big-paragraph {
+    font-size: 4.5rem; 
+    font-weight: bold; 
+    text-align: left;
+}
+
+.smaller-paragraph {
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
+.button {
+    background-color: #ff9966; 
+    color: white;
+    text-align: center;
+    font-size: 16px;
+    font-weight: bolder;
+    width: 150px;
+    height: 60px;
+    border-radius: 10px;
+    outline: none;
+}
+
+
+.parallax-container img {
+    width: max-content; 
+    height: max-content; 
+    outline: none;
+}
+
+.text-container {
+    margin-top: 150px; /* Adjust the top margin as needed */
+    padding-left: 75px; /* Add left padding to align content */
+}
+
+.text-container p {
+    margin-top: 10px;
+    margin-bottom: 10px; /* Add bottom margin to paragraphs for spacing */
+}
+
+.text-container .button {
+    margin-top: 20px; /* Add top margin to the button for spacing */
+}
+
+.text-container a {
+    margin-left: -50px; /* Adjust margin as needed */
+    color: white;
+    text-transform: lowercase;
+  }
