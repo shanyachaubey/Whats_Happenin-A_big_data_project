@@ -7,7 +7,7 @@ function Animal() {
 
     for (let i = 0; i < cardLimit; i++) {
       const cardCol = document.createElement('div');
-      cardCol.className = 'col-3';
+      cardCol.className = 'col md-4';
       cardCol.innerHTML = `
         <div class="card d-flex flex-column h-100" style="border-color: rgb(0, 179, 255);">
           <img class="card-img-top" src="" alt="Card image cap" width="200" height="300" />

@@ -13,11 +13,14 @@ body {
     background-position: center;
     z-index: -1; /* Ensure it stays behind other content */
 }
-       
+
+.row {
+    padding-top: 20px;
+}
+
 .datepicker-container {
     border: 1px solid #ccc;
     border-radius: 5px;
-    margin-bottom: 10px; /* Reduced margin */
     background-color: beige;
 }
 
@@ -31,9 +34,16 @@ body {
 } */
 
 .search-container {
-    border: 1px solid #ccc;
     border-radius: 5px;
-    background-color: beige;
+    display: flex;
+    align-items: center; /* Align items vertically */
+}
+
+.search-container input[type="text"] {
+    font-weight: bolder; /* Make the font bold */
+    font-size: 25px; /* Adjust the font size as needed */
+    flex-grow: 1; /* Allow input to grow and fill available space */
+    min-width: 0; /* Ensure input can shrink if needed */
 }
 
 #submit-btn {

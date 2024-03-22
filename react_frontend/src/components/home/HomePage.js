@@ -1,6 +1,6 @@
 import React from 'react';
 import './homePageStyles.css'; // Import your CSS file
-import wh_logo from '../../utils/images/wh_logo.png'
+//import wh_logo from '../../utils/images/wh_logo.png'
 import { useNavigate } from "react-router-dom";
 
 function HomePage() {
@@ -12,11 +12,11 @@ function HomePage() {
 
   return (
     <section className="parallax-container">
-    <header>
+    {/* <header>
       <div className="logo">
         <img src={wh_logo} alt="logo" />
       </div>
-    </header>
+    </header> */}
     <div className="text-container">
       <p className="small-paragraph">Explore. Immerse. Discover.</p>
       <p className="big-paragraph">City Insights at <br />Your Fingertips</p>
