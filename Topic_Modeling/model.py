@@ -7,7 +7,8 @@ import numpy as np
 import joblib
 
 # Load Existing and New Labeled Data
-with open('existing_dataset.json', 'r') as f:
+with open('existing_dataset.json', 'r', encoding='utf-8') as f:
+
     existing_data = json.load(f)
 
 new_labeled_data = []
@@ -18,6 +19,7 @@ combined_data = existing_data + new_labeled_data
 
 # Preprocessing
 texts = [sample['title'] + ' ' + sample['summary'] for sample in combined_data]
+print(texts)
 
 # Vectorize the text data
 vectorizer = CountVectorizer()
@@ -27,7 +29,7 @@ X = vectorizer.fit_transform(texts)
 joblib.dump(vectorizer, 'countvectorizer.pkl')
 
 # Topic Modeling with LDA
-lda = LatentDirichletAllocation(n_components=10, random_state=42)  # Assuming 10 categories
+lda = LatentDirichletAllocation(n_components=8, random_state=42)  # Assuming 8 categories
 lda.fit(X)
 
 # Prediction
@@ -45,16 +47,14 @@ for idx, (title, summary, pred_category) in enumerate(zip([sample['title'] for s
 
 #This is just for clarity 
 category_names = {
-    0: "Technology",
-    1: "Environment/Nature",
-    2: "Social Issues",
-    3: "Infrastructure",
-    4: "Entertainment",
-    5: "Health",
-    6: "Economy",
-    7: "Science",
-    8: "Education",
-    9: "Government"
+    0: "Sports",
+    1: "Entertainment",
+    2: "Science",
+    3: "Business",
+    4: "Politics",
+    5: "Healthcare",
+    6: "Technology",
+    7: "Education"
 }
 
 # Print predicted categories for data
@@ -98,6 +98,5 @@ for category, count in category_counts.items():
     print(f"{category}: {percentage:.2f}%")
 
 joblib.dump(lda, 'model.pkl')    
-
 
 joblib.dump(lda, 'lda_model.jl')

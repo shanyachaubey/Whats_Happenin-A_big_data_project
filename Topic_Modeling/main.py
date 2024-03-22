@@ -43,7 +43,7 @@ async def get_favicon():
 class Article(BaseModel):
     rank: int
     title: str
-    excerpt: str
+    excerpt: Optional[str]=None
     summary: str
     link: str
     author: str
@@ -52,6 +52,8 @@ class Article(BaseModel):
 
 # Function to fetch articles by ObjectId 
 def get_articles_using_oid(oid: str) -> List[Article]:
+
+
     try:
         object_id = ObjectId(oid)
         article_data = collection.find_one({"_id": object_id})
@@ -109,7 +111,7 @@ async def update_mongo(oid: str = Query(..., description="Object ID of the docum
 
     
     # Setting the top_x number to be able to change this later
-    top_x = 10
+    top_x = 24
 
     topics = set(article.get("topic") for article in article_list)
     top_x_all_cat = sorted(range(len(article_list)), key = lambda i: article_list[i].get("rank"))[:top_x]
@@ -125,8 +127,8 @@ async def update_mongo(oid: str = Query(..., description="Object ID of the docum
     update_query = {
         "$set":{
             "articles":article_list,
-            "top_x_all_cat": top_x_all_cat,
-            "top_10_by_topics": top_x_by_topics,
+            "top_24_all_cat": top_x_all_cat,
+            "top_24_by_topics": top_x_by_topics,
             "data_for_bubble": topics_proportion
         }
     }
