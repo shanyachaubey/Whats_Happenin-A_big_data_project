@@ -113,36 +113,38 @@ function Map() {
       console.error('Client Error:', error.code, error.message);
     }
   }
-
+  
   return (
     <div>
       <div className="container">
         <div className="row">
           <div className="col-md-6">
-            <div className="search-container">
-              <h2>Search</h2>
-              <input type="text" id="search-input" placeholder="Search..." className="form-control" />
-            </div>
-          </div>
-          <div className="col-md-6">
-            <div className="datepicker-container">
-              <h2>Select Date Range</h2>
-              <label htmlFor="start-date">Start Date:</label>
-              <input type="date" id="start-date" className="form-control" />
-              <label htmlFor="end-date">End Date:</label>
-              <input type="date" id="end-date" className="form-control" />
-              <button id="submit-btn" className="btn btn-primary" onClick={handleSubmit}>Submit</button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="container">
-        <div className="row">
-          <div className="col-md-6">
-            <div id="map" style={{ width: '100%', height: '500px' }}></div>
+            <div id="map" style={{ width: '100%', height: '800px' }}></div>
             <div id="address"></div>
           </div>
-          {/* You can render your React bubble chart component here */}
+          {/* Search and Date Selection */}
+          <div className="col-md-6">
+            <div className="row">
+            <div className="col-md-6">
+              <div className="datepicker-container">
+                  <h2>Select Date Range</h2>
+                  <label htmlFor="start-date">Start Date:</label>
+                  <input type="date" id="start-date" className="form-control" />
+                  <label htmlFor="end-date">End Date:</label>
+                  <input type="date" id="end-date" className="form-control" />
+                  <button id="submit-btn" className="btn btn-primary" onClick={handleSubmit}>Submit</button>
+                </div>
+              </div>
+
+              <div className="col-md-6">
+                <div className="search-container">
+                  <h2>Search</h2>
+                  <input type="text" id="search-input" placeholder="Search..." className="form-control" />
+                </div>
+              </div>
+    
+            </div>
+          </div>
         </div>
       </div>
     </div>

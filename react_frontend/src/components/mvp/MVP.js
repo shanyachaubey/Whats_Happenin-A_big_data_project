@@ -7,7 +7,6 @@ import Bubble from '../bubble-chart/bubble-render.js'
 function MVP() {
   return (
     <div>
-      <h1> MVP </h1>
       <div><Navigation/></div>
       <div><Map/></div>
       <div><Bubble/></div>

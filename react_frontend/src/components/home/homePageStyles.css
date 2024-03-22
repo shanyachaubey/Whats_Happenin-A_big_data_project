@@ -8,17 +8,11 @@ body {
     margin: 0;
 }
 
-header {
-    display: flex;
-    justify-content: flex-start; /* Align items to the left */
-    text-align: left;
-}
-
 .parallax-container {
     display: flex;
     min-height: 100vh;
     flex-direction: column;
-    align-items: flex-start; /* Align items to the left */
+    align-items: flex-start;
     background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('../../utils/images/wh_landingpage_background.jpeg');
     background-position: center;
     background-size: cover;
@@ -65,6 +59,7 @@ h3 {
     max-height: 90px; 
     outline: none;
     border-radius: 10px;
+
 }
 
 .small-paragraph {
