@@ -131,7 +131,8 @@ function Map() {
               </div>
               <div className="col-md-6 d-flex justify-content-center" style={{ marginLeft: '-10px' }}>
                 <div className="search-container">
-                  <input type="text" id="search-input" placeholder="what's happenin in..." className="form-control" />
+                  {/* Adding disabled attribute to make the input uneditable */}
+                  <input type="text" id="search-input" placeholder="what's happenin in..." className="form-control" disabled />
                 </div>
               </div>
             </div>
@@ -140,6 +141,7 @@ function Map() {
       </div>
     </div>
   );
+  
 }
 
 export default Map;
