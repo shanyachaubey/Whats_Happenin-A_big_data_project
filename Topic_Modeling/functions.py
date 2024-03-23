@@ -3,23 +3,32 @@ import requests
 import creds
 import json
 
-#Text transformation Modules
+#Text processing Modules
 import string
 import re
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
 
 #General Data processing Modules
 import pandas as pd
 import numpy as np
 from typing import Dict, List
+from collections import defaultdict
 
 #NLP Modules
 import spacy
 from spacy.pipeline import Sentencizer
 
+
 #Modules for checking for title similarity
 from itertools import combinations
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+
+# Modules for topic modeling
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.decomposition import LatentDirichletAllocation
+import joblib
 
 def get_cities(latitude, longitude):
 
@@ -226,7 +235,58 @@ def get_and_process_json_data(city_names, start_date, end_date):
 
     return articles_json
 
+def process_string(text):
 
+    """
+    This function processing raw string by making words lowercase
+    removing punctuations, removing whitespace, special characters
+
+    Args:
+        text (str): Raw input string
+    
+    Return:
+        text (str): String with punctuations, whitespaces, special characters removed.
+
+    """
+
+    # Making the text lower case
+    text = text.lower() 
+
+    # Removing punctuations
+    translator = str.maketrans('', '', string.punctuation)
+    text = text.translate(translator)
+
+    # Removing whitespace
+    text = " ".join(text.split())
+
+    return text
+
+
+#UNCOMMENT BELOW TO USE SPACY TEXT PROCESSING
+
+#initializing nlp object
+# nlp = spacy.load(".venv\Lib\site-packages\en_core_web_sm\en_core_web_sm-3.0.0")
+# sentencizer = Sentencizer()
+# nlp.add_pipe('sentencizer', before = "parser")
+
+# def process_string(raw_string):
+
+#     """
+#     Takes in raw string and makes it an nlp object
+#     then returns a string that can be used for NLP
+
+#     Args:
+#         raw_string (str): Raw string
+    
+#     Returns:
+#         process_str (str): Fully processed string
+#     """
+#     string_1 = str(raw_string).replace(",","")
+#     doc = nlp(string_1)
+#     processed_string = ' '.join([token.text \
+#                                 for token in doc \
+#                                 if not token.is_punct and not token.is_space])
+#     return processed_string
 
 def process_shrink_data(articles, location):
     """
@@ -244,30 +304,11 @@ def process_shrink_data(articles, location):
     
     """
     
-    #initializing nlp object
-    nlp = spacy.load("en_core_web_sm")
-    sentencizer = Sentencizer()
-    nlp.add_pipe('sentencizer', before = "parser")
-    
-    def process_string(raw_string):
+    # UNCOMMENT BELOW WHEN SKLEARN RESOLVED Loading the model
+    lda_model = joblib.load('model.pkl')
+    vectorizer = joblib.load('countvectorizer.pkl')
+   
 
-        """
-        Takes in raw string and makes it an nlp object
-        then returns a string that can be used for NLP
-
-        Args:
-            raw_string (str): Raw string
-        
-        Returns:
-            process_str (str): Fully processed string
-        """
-        string_1 = str(raw_string).replace(",","")
-        doc = nlp(string_1)
-        processed_string = ' '.join([token.text \
-                                    for token in doc \
-                                    if not token.is_punct and not token.is_space])
-        return processed_string
-    
     location = location
     processed_articles = []
     for item in articles:
@@ -282,10 +323,31 @@ def process_shrink_data(articles, location):
         title = process_string(item.title)
         
         #Get excerpt
-        excerpt = process_string(item.excerpt)
+        if item.excerpt == None:
+            excerpt = "No excerpt for this article"
+        else:
+            excerpt = process_string(item.excerpt)
         
         #Get summary
         summary = process_string(item.summary)
+
+        # UNCOMMENT BELOW WHEN NEEDED Getting topic, using LDA
+        category_names = {
+                    0: "Sports",
+                    1: "Entertainment",
+                    2: "Science",
+                    3: "Business",
+                    4: "Politics",
+                    5: "Healthcare",
+                    6: "Technology",
+                    7: "Education"
+                }
+        
+        text = f"{title} {summary}"
+        X_test = vectorizer.transform([text])
+        predicted_categories = lda_model.transform(X_test)
+        category_idx = np.argmax(predicted_categories)
+        topic = category_names[category_idx]
         
         processed_article = {
             "rank": int(item.rank),
@@ -297,9 +359,9 @@ def process_shrink_data(articles, location):
             "author": str(item.author),
             "published_date": item.published_date[:10],
             "image_link": item.media,
-            "topic": "sports" #This will come from Niharika's model
+            "topic": topic #This will come from Niharika's model
         }
-        # SHANYA INSERT NIHARIKA'S MODEL HERE
+        
         processed_articles.append(processed_article)
 
     articles_json = {
@@ -313,7 +375,7 @@ def process_shrink_data(articles, location):
     articles_json['articles'] = [articles_json['articles'][i] for i in unique_indices]
 
     #REMOVE BELOW PRINT STATEMENT WHEN DONE TESTING
-    print(len(articles_json['articles']))
+    #print(len(articles_json['articles']))
     json_output = json.dumps(articles_json, ensure_ascii=False)
 
     return json_output
@@ -343,8 +405,8 @@ def get_top_x(data, top_x=2):
     top_10_indices = {}
 
     for i, article in enumerate(data["articles"]):
-        topic = article["topic"]
-        topics.setdefault(topic, []).append((i, article["rank"]))
+        topic = article.topic
+        topics.setdefault(topic, []).append((i, article.rank))
     
     for topic, articles in topics.items():
         articles.sort(key=lambda x:x[1])
