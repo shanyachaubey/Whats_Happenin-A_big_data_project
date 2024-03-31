@@ -1,16 +1,20 @@
 import React from 'react';
-import Navigation from './navBar.js'
-import Map from './map.js'
-import Animal from './animal.js'
-import Bubble from '../bubble-chart/bubble-render.js'
+import Navigation from './navBar.js';
+import Map from './map.js';
+import Animal from './animal.js';
+import App from '../bubble-chart copy/src/App.js';
 
 function MVP() {
   return (
-    <div>
-      <div><Navigation/></div>
-      <div><Map/></div>
-      <div><Bubble/></div>
-      <div><Animal/></div>
+    <div style={{ display: 'flex' }}>
+      <div style={{ flex: 1 }}>
+        <Navigation />
+        <Map />
+        <Animal />
+      </div>
+      <div style={{ flex: 1 }}>
+        <App />
+      </div>
     </div>
   );
 }

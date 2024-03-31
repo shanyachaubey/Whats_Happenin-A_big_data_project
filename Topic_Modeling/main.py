@@ -3,7 +3,7 @@ from pymongo import MongoClient
 from bson import ObjectId 
 from pydantic import BaseModel
 from typing import List, Optional
-from functions import process_shrink_data, get_top_x
+from functions import process_shrink_data
 import json
 
 # Connect to MongoDB
@@ -43,7 +43,7 @@ async def get_favicon():
 class Article(BaseModel):
     rank: int
     title: str
-    excerpt: str
+    excerpt: Optional[str]=None
     summary: str
     link: str
     author: str
@@ -52,6 +52,8 @@ class Article(BaseModel):
 
 # Function to fetch articles by ObjectId 
 def get_articles_using_oid(oid: str) -> List[Article]:
+
+
     try:
         object_id = ObjectId(oid)
         article_data = collection.find_one({"_id": object_id})
@@ -64,8 +66,6 @@ def get_articles_using_oid(oid: str) -> List[Article]:
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
-
-
 # Function to fetch the location from MongoDB
 def get_location_using_oid(oid:str) -> str:
     try:
@@ -79,23 +79,12 @@ def get_location_using_oid(oid:str) -> str:
     except Exception as e:
         raise HTTPException(status_code=500, details=str(e))
     
-def update_articles_using_oid(articles: List[Article], oid: str) -> None:
-    try:
-        object_id = ObjectId(oid)
-        articles_dict = [article.dict() for article in articles]
-        update_query = {"$set": {"articles": articles_dict}}
-        collection.update_one({"_id": object_id}, update_query)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.get("/location")
-async def get_location(oid: str = Query(..., description="Object ID of the document to fetch articles for")):
-    location = get_location_using_oid(oid)
-    return location
-
 
 @app.put("/articles")
 async def update_mongo(oid: str = Query(..., description="Object ID of the document to fetch articles for")):
+    """
+    
+    """
     articles = get_articles_using_oid(oid)
     location = get_location_using_oid(oid)
     articles = process_shrink_data(articles, location)
@@ -106,9 +95,23 @@ async def update_mongo(oid: str = Query(..., description="Object ID of the docum
         raise HTTPException(status_code=500, detail = "Error decoding JSON: "+ str(e))
     
     article_list = articles_json["articles"]
+
+    topics_count = {}
+    total = len(article_list)
+
+    for article in article_list:
+        topic = article.get("topic")
+        if topic in topics_count:
+            topics_count[topic] += 1
+        else:
+            topics_count[topic] = 1
+    
+    topics_proportion = {topic:(count/total)*100 for topic, count in topics_count.items()}
+
+
     
     # Setting the top_x number to be able to change this later
-    top_x = 10
+    top_x = 24
 
     topics = set(article.get("topic") for article in article_list)
     top_x_all_cat = sorted(range(len(article_list)), key = lambda i: article_list[i].get("rank"))[:top_x]
@@ -124,25 +127,10 @@ async def update_mongo(oid: str = Query(..., description="Object ID of the docum
     update_query = {
         "$set":{
             "articles":article_list,
-            "top_x_all_cat": top_x_all_cat,
-            "top_10_by_topics": top_x_by_topics
+            "top_24_all_cat": top_x_all_cat,
+            "top_24_by_topics": top_x_by_topics,
+            "data_for_bubble": topics_proportion
         }
     }
     collection.update_one({"_id": ObjectId(oid)}, update_query)  
     
-
-# @app.put("/articles")
-# async def update_articles(articles: List[Article], oid: str = Query(..., description="Object ID of the document to update articles for")):
-#     update_articles_using_oid(oid, articles["articles"])
-#     return {"message": "Articles updated successfully"}
-
-# Structure for return data
-# {
-#   "_id": {
-#     "$oid": "65ef84f014a800191c3ee499"
-#   },
-#   "location": "Boulder, CO",
-#   "articles": [] (article_list),
-#   "top_10_all_cat": [],
-#   "top_10_by_topics": {"topic_1":[], "topic_2":[]}
-# #
