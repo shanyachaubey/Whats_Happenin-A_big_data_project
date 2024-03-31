@@ -10,13 +10,9 @@ import (
 func MakePythonPipelineRequest(oid string) (bool, error) {
 	fastapi_url := fmt.Sprintf("http://fastapi-service.%s.svc.cluster.local:8000/articles", namespace)
         
-        log.Printf("Fast api: %s", fastapi_url)
-
 	// Define request parameters
 	params := url.Values{}
 	params.Set("oid", oid)
-
-        log.Printf("oid recevied is: %s", oid)
 
 	// Create a new request with the specified URL and parameters
 	req, err := http.NewRequest("PUT", fastapi_url, nil)
@@ -24,8 +20,6 @@ func MakePythonPipelineRequest(oid string) (bool, error) {
 		log.Fatalf("Failed to create request: %v", err)
 	}
         
-        log.Printf("REached 1")
-
 	// Set request headers
 	req.Header.Set("Accept", "application/json")
 
@@ -40,8 +34,6 @@ func MakePythonPipelineRequest(oid string) (bool, error) {
 	}
 	defer resp.Body.Close()
         
-        log.Printf("Reached 2")
-
 	// Check response status code
 	if resp.StatusCode != http.StatusOK {
 		return false, fmt.Errorf("Error: %v", resp.StatusCode)
