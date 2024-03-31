@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import './modalWithDateSelection.css'
+import { UserQueryServiceClient } from '../../proto/userquerysession_grpc_web_pb.js'
+import { UserQuery } from '../../proto/userquerysession_pb'
+
 
 function ModalWithDateSelection() {
   const [startDate, setStartDate] = useState('');
@@ -19,15 +22,70 @@ function ModalWithDateSelection() {
     console.log('Selected Start Date:', startDate);
     console.log('Selected End Date:', endDate);
 
+    // Your code to submit form data here
+    const userQuery = new UserQuery();
+    userQuery.setDateStart(startDate);
+    userQuery.setDateEnd(endDate);
+    userQuery.setLocation("Los Angeles, California");
+
+    // Initialize gRPC client.
+    try {
+      const client = new UserQueryServiceClient('http://127.0.0.1:1337');
+      console.log(client)
+
+      client.startSession(userQuery, {}, (err, response) => {
+        console.log("Request went before error");
+
+        if (err) {
+          console.error("gRPC Error: ", err.message);
+          console.error("gRPC Status Code: ", err.code);
+          return;
+        }
+        console.log("Request went after error");
+        // Convert the bytes field to a JSON string
+        const oidString = response.array[0]
+
+        const byteMongoData = new Uint8Array(response.array[1]);
+        const byteMongoArray = Array.from(byteMongoData);
+        // Convert JavaScript array to JSON string
+        const byteMongoString = JSON.stringify(byteMongoArray);
+        const byteMongoObject = JSON.parse(byteMongoString);
+
+        const base64String = convertTobase64encoded(byteMongoObject)
+        const base64Data = JSON.parse(base64String).oidResponse
+
+        const finalJSONString = convertToJSON(base64Data)
+
+        console.log("Received OID data:", oidString);
+        console.log("Received response data:", finalJSONString)
+      });
+    } catch (error) {
+      console.error('Client Error:', error.code, error.message);
+    }
     // Close the modal
     setShowModal(false);
-  };
+  }
+
+  function convertTobase64encoded(jsonByteObject) {
+    const decoder = new TextDecoder('utf-8');
+    const decodedString = decoder.decode(new Uint8Array(jsonByteObject));
+
+    // const decodedString = String.fromCharCode.apply(null, jsonByteObject);
+    const jsonObject = JSON.parse(decodedString);
+    const base64String = JSON.stringify(jsonObject);
+    return base64String;
+  }
+
+  function convertToJSON(base64Data) {
+    const decodedString = atob(base64Data);
+    return decodedString
+  }
 
   return (
     <div>
       <button className="btn btn-primary" onClick={() => setShowModal(true)} style={{ padding: '0', border: 'none', background: 'none', width: '60px', height: '60px' }}>
-  <img src="https://cdn-icons-png.flaticon.com/512/1427/1427965.png" alt="Open Modal" style={{ width: '100%', height: '100%' }} />
-</button>
+        <img src="https://cdn-icons-png.flaticon.com/512/1427/1427965.png" alt="Open Modal" style={{ width: '100%', height: '100%' }} />
+      </button>
 
       {showModal && (
         <div className="modal" tabIndex="-1" role="dialog" style={{ display: 'block' }}>

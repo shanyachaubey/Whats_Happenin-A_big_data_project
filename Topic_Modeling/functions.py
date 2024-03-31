@@ -16,8 +16,6 @@ from typing import Dict, List
 from collections import defaultdict
 
 #NLP Modules
-import spacy
-from spacy.pipeline import Sentencizer
 
 
 #Modules for checking for title similarity
@@ -115,125 +113,6 @@ def get_unique_indices(data):
     
     return unique_indices
 
-
-def get_and_process_json_data(city_names, start_date, end_date):
-
-    """
-    This function takes in the name of the cities,
-    start date of query, end date of query, makes an API call
-    cleans, processes and shortens the json ouput of the API call
-    and returns a json file
-
-    Args:
-        city_names (List(str)): Nems of cities extracted using get_cities()
-        start_date (str): Start date of the query
-        end_date (str): End date of the query
-
-    Returns:
-        articles_json (json): A json with cleaned, processed
-                             and no duplicate data
-    """
-
-    #initializing nlp object
-    nlp = spacy.load("en_core_web_sm")
-    sentencizer = Sentencizer()
-    nlp.add_pipe('sentencizer', before = "parser")
-    
-    def process_string(raw_string):
-
-        """
-        Takes in raw string and makes it an nlp object
-        then returns a string that can be used for NLP
-
-        Args:
-            raw_string (str): Raw string
-        
-        Returns:
-            process_str (str): Fully processed string
-        """
-        string_1 = str(raw_string).replace(",","")
-        doc = nlp(string_1)
-        processed_string = ' '.join([token.text \
-                                    for token in doc \
-                                    if not token.is_punct and not token.is_space])
-        return processed_string
-
-    endpoint = 'https://api.newscatcherapi.com/v2/search?'
-    headers = {'x-api-key': creds.api_key}
-
-    processed_articles = []
-
-    #Add constraint using regex to avoid any searches with Reporting by Brad Brooks in Longmont, Colorado
-    for place in city_names:
-
-        params = {
-            'q': place,
-            'lang': 'en',
-            'countries': 'US',
-            'ranked_only': True,
-            'sort_by': 'rank',
-            'page_size': 100,
-            'page':20,
-            'to': end_date,
-            'from': start_date
-        }
-
-        response = requests.get(endpoint, headers=headers, params=params)
-        json_text = response.json()
-        total_hits = json_text['total_hits']
-
-        #REMOVE BELOW PRINT STATEMENT WHEN DONE TESTING
-        print(f'Number of articles fetched for {place}: {total_hits}')
-
-        for item in json_text['articles']:
-            
-            #Condition to continue to next iteration if str present
-            regex_pattern = rf'Reporting by .{{0,50}} in {place}'
-            if re.search(regex_pattern, item['summary']):
-                continue
-
-            #Get title
-            title = process_string(item['title'])
-            
-            #Get excerpt
-            excerpt = process_string(item['excerpt'])
-            
-            #Get summary
-            summary = process_string(item['summary'])
-            
-            processed_article = {
-                "id": item['_id'],
-                "rank": int(item['rank']),
-                "location": place,
-                "title": title,
-                "excerpt": excerpt,
-                "summary": summary,
-                "link": item['link'],
-                "author": str(item['author']),
-                "published_date": item['published_date'][:10],
-                "image_link": item['media'],
-                "topic": item['topic']
-            }
-
-            processed_articles.append(processed_article)
-
-    articles_json = {
-        "articles": processed_articles
-    }
-
-    #REMOVE BELOW PRINT STATEMENT WHEN DONE TESTING
-    print(len(articles_json['articles']))
-
-    data = articles_json['articles']
-
-    unique_indices = get_unique_indices(data)
-
-    articles_json['articles'] = [articles_json['articles'][i] for i in unique_indices]
-    
-    #REMOVE BELOW PRINT STATEMENT WHEN DONE TESTING
-    print(len(articles_json['articles']))
-
-    return articles_json
 
 def process_string(text):
 

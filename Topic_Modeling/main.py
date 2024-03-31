@@ -5,11 +5,16 @@ from pydantic import BaseModel
 from typing import List, Optional
 from functions import process_shrink_data
 import json
+import os
 
 # Connect to MongoDB
-client = MongoClient('mongodb://localhost:27017/')
-db = client['local']
-collection = db['test']
+namespace = os.getenv("NAMESPACE", "default")
+mongodb_uri = f"mongodb://root:password@mongodb-0.mongo.{namespace}.svc.cluster.local:27017/admin"
+client = MongoClient(mongodb_uri)
+print(client)
+
+db = client['userquery']
+collection = db['sessions']
 pipeline = [
     {
         '$project': {
@@ -85,6 +90,7 @@ async def update_mongo(oid: str = Query(..., description="Object ID of the docum
     """
     
     """
+    print(oid)
     articles = get_articles_using_oid(oid)
     location = get_location_using_oid(oid)
     articles = process_shrink_data(articles, location)
