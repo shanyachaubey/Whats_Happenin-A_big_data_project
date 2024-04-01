@@ -12,7 +12,7 @@ func startSession(c pb.UserQueryServiceClient) {
 
 	blog := &pb.UserQuery{
 		DateStart: "03/02/2024",
-		DateEnd:   "03/06/2024",
+		DateEnd:   "03/20/2024",
 		Location:  "Los Angeles, California",
 	}
 

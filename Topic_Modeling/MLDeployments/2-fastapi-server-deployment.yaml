@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
       - name: fastapi
-        image: anakin1612/fastapi:prodBeta7 #last stable version: {e0, prodBeta7)
+        image: anakin1612/fastapi:prodBeta10 #last stable version: {e0, prodBeta7)
         ports:
         - containerPort: 8000
