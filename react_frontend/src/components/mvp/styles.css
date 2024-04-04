@@ -8,7 +8,7 @@ body {
     padding: 0;
     margin: 0;
     outline: none;
-    background-image: url('https://images.pexels.com/photos/1563256/pexels-photo-1563256.jpeg?cs=srgb&dl=pexels-ricky-esquivel-1563256.jpg&fm=jpg');
+    /* background-image: url('https://images.pexels.com/photos/1563256/pexels-photo-1563256.jpeg?cs=srgb&dl=pexels-ricky-esquivel-1563256.jpg&fm=jpg'); */
     background-size: cover;
     background-position: center;
     z-index: -1; /* Ensure it stays behind other content */
@@ -55,3 +55,8 @@ body {
     border: 1px solid #ccc;
     margin-top: 10px;
 }
+
+#tsparticles {
+    height: 100vh;
+    width: 100vw;
+  }  

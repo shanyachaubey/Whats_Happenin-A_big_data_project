@@ -13,7 +13,7 @@ body {
     min-height: 100vh;
     flex-direction: column;
     align-items: flex-start;
-    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('../../utils/images/wh_landingpage_background.jpeg');
+    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('../../utils/images/chicago-city-wallpaper-background-hd-18668-19220-hd-wallpapers.jpg');
     background-position: center;
     background-size: cover;
     color: var(--color);
