@@ -32,8 +32,7 @@ function CalSearch() {
               </div>
               <div className="col-md-6 d-flex justify-content-center" style={{ marginLeft: '-10px' }}>
                 <div className="search-container">
-                  {/* Adding disabled attribute 
-        to make the input uneditable */}
+                  {/* Adding disabled attribute to make the input uneditable */}
                   <input type="text" id="search-input" placeholder="what's happenin in..." className="form-control" disabled />
                 </div>
               </div>
