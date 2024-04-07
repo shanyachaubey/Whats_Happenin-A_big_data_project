@@ -10,7 +10,7 @@ import nltk
 from nltk.tokenize import RegexpTokenizer
 from nltk.stem.wordnet import WordNetLemmatizer
 nltk.download('punkt')
-nltk.download('average_perceptron_tagger')
+
 
 #General Data processing Modules
 import pandas as pd
@@ -232,13 +232,14 @@ def predict_category(model, new_summaries):
     """
     dictionary = Dictionary.load('dictionary.pkl')
     topic_dictionary = {
-                        0: "Politics",
+                        0: "Community",
                         1: "Hard News",
-                        2: "Business",
-                        3: "Entertainment",
-                        4: "Community",
+                        2: "Sports",
+                        3: "Business",
+                        4: "Entertainment",
                         5: "Technology",
-                        6: "Sports"
+                        6: "Crime",
+                        7: "Politics"
                         }
     # Processing the new summaries to prepare them for gensim
     processed_summaries = process_for_gensim(new_summaries)
@@ -330,7 +331,7 @@ def process_shrink_data(articles, location):
         #Get title
         if item.title == None:
             continue
-        title = process_string(item.title)
+        title = process_title(item.title)
         
         #Get excerpt
         if item.excerpt == None:
