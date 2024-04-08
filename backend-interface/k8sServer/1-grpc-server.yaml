@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: grpc-server
-          image: anakin1612/grpc-server:vDefault # v4.0 is the aws image, last stable version: {e0, prodBeta00=arm)
+          image: anakin1612/grpc-server:windows # v4.0 is the aws image, last stable version: {e0, prodBeta00=arm)
           ports:
             - containerPort: 50051
           resources:
