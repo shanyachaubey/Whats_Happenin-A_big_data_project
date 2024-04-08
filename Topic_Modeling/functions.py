@@ -10,6 +10,7 @@ import nltk
 from nltk.tokenize import RegexpTokenizer
 from nltk.stem.wordnet import WordNetLemmatizer
 nltk.download('punkt')
+nltk.download('wordnet')
 
 
 #General Data processing Modules
