@@ -48,7 +48,7 @@ function Map() {
     });
 
     return () => map.remove();
-  }, []);
+  }, [setLocation]);
 
 }
 

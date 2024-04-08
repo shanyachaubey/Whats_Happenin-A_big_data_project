@@ -112,10 +112,8 @@ async def update_mongo(oid: str = Query(..., description="Object ID of the docum
         else:
             topics_count[topic] = 1
     
-    topics_proportion = {topic:(count/total)*100 for topic, count in topics_count.items()}
+    topics_proportion = {topic:round((count/total)*100,2) for topic, count in topics_count.items()}
 
-
-    
     # Setting the top_x number to be able to change this later
     top_x = 24
 

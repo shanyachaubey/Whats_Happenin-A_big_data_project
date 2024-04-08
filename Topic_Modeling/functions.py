@@ -6,17 +6,17 @@ import json
 #Text processing Modules
 import string
 import re
-from nltk.tokenize import word_tokenize
-from nltk.corpus import stopwords
+import nltk
+from nltk.tokenize import RegexpTokenizer
+from nltk.stem.wordnet import WordNetLemmatizer
+nltk.download('punkt')
+nltk.download('wordnet')
 
 #General Data processing Modules
 import pandas as pd
 import numpy as np
 from typing import Dict, List
 from collections import defaultdict
-
-#NLP Modules
-
 
 #Modules for checking for title similarity
 from itertools import combinations
@@ -27,27 +27,46 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.decomposition import LatentDirichletAllocation
 import joblib
+import json
 
-def get_cities(latitude, longitude):
+from gensim.models import Phrases
+from gensim.corpora import Dictionary
+from gensim.models import LdaModel
+from gensim.parsing.preprocessing import remove_stopwords 
+
+
+def process_string(text):
 
     """
-    This function returns the names of all cities
-    that fall within the latitude and longitude range
-    of the map on Whats Happenin UI
+    This function processing raw string by making words lowercase
+    removing punctuations, removing whitespace, special characters
 
-    Args: 
-        latitude range (float): 
-        longitude range
-
-    Returns
-        city_names (List(str)): Names of all cities within 
-                                the latitude, longitude range
+    Args:
+        text (str): Raw input string
     
+    Return:
+        text (str): String with punctuations, whitespaces, special characters removed.
+
     """
-    
-    #replace below after Justin provides input
-    city_names = ['Boulder, CO', 'Longmont, CO', 'Colorado Springs, Colorado']
-    return city_names
+
+    # Making the text lower case
+    text = text.lower() 
+
+    # Removing punctuations
+    translator = str.maketrans('', '', string.punctuation)
+    text = text.translate(translator)
+
+    # Removing whitespace
+    text = " ".join(text.split())
+
+    return text
+
+
+def remove_url(string):
+
+    url_pattern = re.compile(r'https?://\S+|www\.\S+')
+
+    return url_pattern.sub('', string)
 
 def get_unique_indices(data):
     """
@@ -64,7 +83,7 @@ def get_unique_indices(data):
 
     """
 
-    titles = [entry['title'] for entry in data]
+    titles = [process_string(entry['title']) for entry in data]
     ranks = [entry['rank'] for entry in data]
 
     # Compute similarity score between titles
@@ -113,59 +132,170 @@ def get_unique_indices(data):
     
     return unique_indices
 
-
-def process_string(text):
-
+def process_for_gensim(docs):
     """
-    This function processing raw string by making words lowercase
-    removing punctuations, removing whitespace, special characters
+    This function prepares the summary to be used by the 
+    gensim topic model for topic modeling
 
     Args:
-        text (str): Raw input string
-    
-    Return:
-        text (str): String with punctuations, whitespaces, special characters removed.
+        docs (List(str)): List of all summaries of articles 
+                        fetched from API call
+
+    Returns:
+        processed_doc (List(List(str))): List of List of tokens of each
+                                         summary with 
+                                         necessary processing done
 
     """
 
-    # Making the text lower case
-    text = text.lower() 
 
-    # Removing punctuations
-    translator = str.maketrans('', '', string.punctuation)
-    text = text.translate(translator)
+    remove_these = {
+    "new york", "los angeles", "chicago", "houston", "phoenix", "philadelphia", "san antonio",
+    "san diego", "dallas", "san jose", "austin", "jacksonville", "san francisco", "columbus",
+    "fort worth", "indianapolis", "charlotte", "seattle", "denver", "washington", "boston",
+    "el paso", "nashville", "detroit", "oklahoma city", "portland", "las vegas", "memphis",
+    "louisville", "baltimore", "milwaukee", "albuquerque", "tucson", "fresno", "sacramento",
+    "kansas city", "long beach", "atlanta", "omaha", "raleigh", "miami", "oakland", "minneapolis",
+    "tulsa", "wichita", "arlington", "new orleans", "cleveland", "bakersfield", "tampa",
+    "alabama", "alaska", "arizona", "arkansas", "california", "colorado", "connecticut",
+    "delaware", "florida", "georgia", "hawaii", "idaho", "illinois", "indiana", "iowa",
+    "kansas", "kentucky", "louisiana", "maine", "maryland", "massachusetts", "michigan",
+    "minnesota", "mississippi", "missouri", "montana", "nebraska", "nevada", "new hampshire",
+    "new jersey", "new mexico", "new york", "north carolina", "north dakota", "ohio", "oklahoma",
+    "oregon", "pennsylvania", "rhode island", "south carolina", "south dakota", "tennessee",
+    "texas", "utah", "vermont", "virginia", "washington", "west virginia", "wisconsin", "wyoming",
+    "al", "ak", "az", "ar", "ca", "co", "ct", "de", "fl", "ga", "hi", "id", "il", "in", "ia", "ks", 
+    "ky", "la", "me", "md", "ma", "mi", "mn", "ms", "mo", "mt", "ne", "nv", "nh", "nj", "nm", "ny", 
+    "nc", "nd", "oh", "ok", "or", "pa", "ri", "sc", "sd", "tn", "tx", "ut", "vt", "va", "wa", "wv", "wi", "wy","it",
+    "i", "me", "my", "myself", "we", "our", "ours", "ourselves", "you", "your", "yours", "yourself", 
+    "yourselves", "he", "him", "his", "himself", "she", "her", "hers", "herself", "it", "its", "itself", 
+    "they", "them", "their", "theirs", "themselves", "what", "which", "who", "whom", "this", "that", "these", 
+    "those", "am", "is", "are", "was", "were", "be", "been", "being", "have", "has", "had", "having", "do", 
+    "does", "did", "doing", "a", "an", "the", "and", "but", "if", "or", "because", "as", "until", "while", 
+    "of", "at", "by", "for", "with", "about", "against", "between", "into", "through", "during", "before", 
+    "after", "above", "below", "to", "from", "up", "down", "in", "out", "on", "off", "over", "under", "again", 
+    "further", "then", "once", "here", "there", "when", "where", "why", "how", "all", "any", "both", "each", 
+    "few", "more", "most", "other", "some", "such", "no", "nor", "not", "only", "own", "same", "so", "than", 
+    "too", "very", "s", "t", "can", "will", "just", "don", "should", "now", "january", "february", "march", "april", 
+    "may", "june", "july", "august", "september", "october", "november", "december", "jan", "feb", "mar", "apr",
+    "jun", "jul", "aug", "sep", "oct", "nov", "dec", "mon", "tue", "wed", "thu", "fri", "sat", "sunday", "monday", "tuesday","wednesday",
+    "thursday", "saturday", "tork","orlando","city","like","want", "going","go","think","way", "come","say","look","good","know","thing",
+    "work","need", "lot", "told", "day", "today", "re", "credit", "la", "people", "feel"
+    }
 
-    # Removing whitespace
-    text = " ".join(text.split())
+    tokenizer = RegexpTokenizer(r'\w+')
 
-    return text
+    for idx in range(len(docs)):
+        # Convert to lowercase
+        docs[idx] = docs[idx].lower()
+        # Remove URLs
+        docs[idx] = remove_url(docs[idx])
+        # Remove stopwords
+        docs[idx] = remove_stopwords(docs[idx])
+        # Split into words
+        docs[idx] = tokenizer.tokenize(docs[idx])
 
+    # Remove numbers, but not words that contain numbers
+    docs = [[token for token in train_summary if not token.isnumeric()] for train_summary in docs]
+    #print(train_data)
 
-#UNCOMMENT BELOW TO USE SPACY TEXT PROCESSING
+    # Remove words that are only one character
+    docs = [[token for token in train_summary if len(token) > 1] for train_summary in docs]
+    #print(len(train_data))
 
-#initializing nlp object
-# nlp = spacy.load(".venv\Lib\site-packages\en_core_web_sm\en_core_web_sm-3.0.0")
-# sentencizer = Sentencizer()
-# nlp.add_pipe('sentencizer', before = "parser")
+    lemmatizer = WordNetLemmatizer()
+    docs = [[lemmatizer.lemmatize(token) for token in train_summary] for train_summary in docs]
 
-# def process_string(raw_string):
+    # Remove all places in remove_these because city and state names are ruining the model
+    docs = [[token for token in train_summary if token not in remove_these] for train_summary in docs]
 
-#     """
-#     Takes in raw string and makes it an nlp object
-#     then returns a string that can be used for NLP
-
-#     Args:
-#         raw_string (str): Raw string
+    bigram = Phrases(docs, min_count = 10)
+    for idx in range(len(docs)):
+        for token in bigram[docs[idx]]:
+            if '_' in token:
+                # Token is a bigram, add it to the document
+                docs[idx].append(token)
     
-#     Returns:
-#         process_str (str): Fully processed string
-#     """
-#     string_1 = str(raw_string).replace(",","")
-#     doc = nlp(string_1)
-#     processed_string = ' '.join([token.text \
-#                                 for token in doc \
-#                                 if not token.is_punct and not token.is_space])
-#     return processed_string
+    return docs
+
+def predict_category(model, new_summaries):
+    """
+    Predicts the category for a new summary or a 
+    list of new summaries using the trained LDA model.
+
+    Args:
+        model (LdaModel): Trained LDA model.
+        new_summaries (List[str] or str): New summary or list of new summaries to predict the category for.
+
+    Returns:
+        predicted_topics (List[int] or int): Predicted topic index or list of predicted topic indices for the new summaries.
+    """
+    dictionary = Dictionary.load('dictionary.pkl')
+    topic_dictionary = {
+                        0: "Community",
+                        1: "Hard News",
+                        2: "Sports",
+                        3: "Business",
+                        4: "Entertainment",
+                        5: "Technology",
+                        6: "Crime",
+                        7: "Politics"
+                        }
+    # Processing the new summaries to prepare them for gensim
+    processed_summaries = process_for_gensim(new_summaries)
+
+    # Creating a bag of work representation of new summaries
+    new_bow = [dictionary.doc2bow(summary) for summary in processed_summaries]
+
+    #Predict the topic distribution
+    predicted_topics = [max(model.get_document_topics(bow), key = lambda item: item[1])[0] for bow in new_bow]
+
+    predicted_topics = [topic_dictionary[topic] for topic in predicted_topics]
+    
+    return predicted_topics
+
+def camelcase_word(word):
+    """
+    This function creates a title into a title that can be displayed
+    on the website
+
+    Args:
+        word (str): input word
+
+    Returns:
+        word (str): output capitalized word
+    """
+    if word.lower() in ['from', 'are', 'the', 'in', 'is']:
+        return word.lower()
+    elif word.isupper():
+        return word
+    else:
+        return word.capitalize()
+
+def process_title(title):
+    """
+    This function is made to remove non title punctuations
+    makes all important words into camelcase and keeps words such as 
+    for, in, the, are, is
+
+    Args:
+        title (str): The title of the articles
+
+    Returns:
+        processed_title (str): Processed Title to display on website
+    """
+
+    title = ''.join(char for char in title if ord(char)<128)
+
+    title_words = title.split()
+    processed_title = title_words[0]+' '+' '.join(camelcase_word(word) for word in title_words[1:])
+
+    # Removing whitespace and period at the end of the sentence
+    processed_title = re.sub(r'\s*\.\s*$', '', processed_title)
+    processed_title = re.sub(r'\s+$', '', processed_title)
+
+    return processed_title
+
 
 def process_shrink_data(articles, location):
     """
@@ -183,13 +313,13 @@ def process_shrink_data(articles, location):
     
     """
     
-    # UNCOMMENT BELOW WHEN SKLEARN RESOLVED Loading the model
-    lda_model = joblib.load('model.pkl')
-    vectorizer = joblib.load('countvectorizer.pkl')
-   
+    # Loading the gensim model 
+    lda = LdaModel.load('model.pkl')
+    
 
     location = location
     processed_articles = []
+    
     for item in articles:
         
         #Condition to continue to next iteration if str present
@@ -199,46 +329,27 @@ def process_shrink_data(articles, location):
             continue
 
         #Get title
-        title = process_string(item.title)
+        if item.title == None:
+            continue
+        title = process_title(item.title)
         
         #Get excerpt
         if item.excerpt == None:
-            excerpt = "No excerpt for this article"
+            excerpt = "Go to Link to find out more about this article"
         else:
             excerpt = process_string(item.excerpt)
         
-        #Get summary
-        summary = process_string(item.summary)
 
-        # UNCOMMENT BELOW WHEN NEEDED Getting topic, using LDA
-        category_names = {
-                    0: "Sports",
-                    1: "Entertainment",
-                    2: "Science",
-                    3: "Business",
-                    4: "Politics",
-                    5: "Healthcare",
-                    6: "Technology",
-                    7: "Education"
-                }
-        
-        text = f"{title} {summary}"
-        X_test = vectorizer.transform([text])
-        predicted_categories = lda_model.transform(X_test)
-        category_idx = np.argmax(predicted_categories)
-        topic = category_names[category_idx]
-        
         processed_article = {
             "rank": int(item.rank),
             "location": location,
             "title": title,
             "excerpt": excerpt,
-            "summary": summary,
+            "summary":item.summary,
             "link": item.link,
             "author": str(item.author),
             "published_date": item.published_date[:10],
-            "image_link": item.media,
-            "topic": topic #This will come from Niharika's model
+            "image_link": item.media
         }
         
         processed_articles.append(processed_article)
@@ -251,49 +362,21 @@ def process_shrink_data(articles, location):
 
     unique_indices = get_unique_indices(data)
 
+    # Creating a json of only non repetitive articles
     articles_json['articles'] = [articles_json['articles'][i] for i in unique_indices]
+    
+    # Creating a list of summaries
+    summaries = [article["summary"] for article in articles_json["articles"]]
 
-    #REMOVE BELOW PRINT STATEMENT WHEN DONE TESTING
-    #print(len(articles_json['articles']))
+    # Getting prediction for each summary
+    predictions = predict_category(model=lda, new_summaries=summaries)
+
+    # Assigning the article topic to each article
+    for article, prediction in zip(articles_json["articles"], predictions):
+        article["topic"] = prediction
+    
+    # Converting to parsable json
     json_output = json.dumps(articles_json, ensure_ascii=False)
 
     return json_output
 
-
-def get_top_x(data, top_x=2):
-    """
-    This function aggregates the articles in the same topic group
-    and sorts them based on rank. Further creates a list of
-    indices for top 10 articles in each category and adds
-    it to the main input json
-
-    Args: 
-        data (dict): 
-        The structure of input must be {"articles": [{"keys":"values"},{"keys":"values"}]}
-
-    Returns:
-        data_for_mongo (dict): 
-        The structure of the output is {"articles": [{"keys":"values"},{"keys":"values"}], 
-                                        "top_x_articles_in_catA":[],
-                                        "top_x_articles_in_catB":[],
-                                        "top_x_articles_in_catC":[]}
-
-    """
-
-    topics = {}
-    top_10_indices = {}
-
-    for i, article in enumerate(data["articles"]):
-        topic = article.topic
-        topics.setdefault(topic, []).append((i, article.rank))
-    
-    for topic, articles in topics.items():
-        articles.sort(key=lambda x:x[1])
-        top_10_indices[topic] = [article[0] for article in articles[:top_x]]
-
-    for topic, indices in top_10_indices.items():
-        data[f"top_10_topic_{topic}"] = indices
-
-    
-    data_for_mongoDB = json.dumps(data, indent=4)
-    return data_for_mongoDB
