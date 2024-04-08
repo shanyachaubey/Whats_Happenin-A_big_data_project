@@ -2,8 +2,11 @@ import { useEffect } from 'react'; //useState
 import mapboxgl from 'mapbox-gl';
 import './mapstyles.css'
 import '../mvp/styles.css'
+import { useLocation } from '../commonUtils/Location.js'
 
 function Map() {
+  const { setLocation } = useLocation();
+
   useEffect(() => {
     mapboxgl.accessToken = 'pk.eyJ1IjoiamFtcm93c2tpIiwiYSI6ImNsbzd3ampoMjA4Y3Aybm8zbHdqNDYxMmQifQ.Dl3WZ3jX4FKgS40ge9Je7Q';
 
@@ -39,6 +42,7 @@ function Map() {
               }
             }
             document.getElementById('search-input').value = `${city}, ${state}`; //, ${country}
+            setLocation(document.getElementById('search-input').value)
           });
       }
     });

@@ -1,14 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import './modalWithDateSelection.css'
 import { UserQueryServiceClient } from '../../proto/userquerysession_grpc_web_pb.js'
 import { UserQuery } from '../../proto/userquerysession_pb'
-
+import { useLocation } from '../commonUtils/Location.js'
 
 function ModalWithDateSelection({ onSubmit }) {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [showModal, setShowModal] = useState(false);
+  const { location } = useLocation();
+
+  useEffect(() => {
+    if (location) {
+      console.log('Received data in modalWithDateSelection:', location);
+    }
+  }, [location]);
 
   const handleStartDateChange = (event) => {
     setStartDate(event.target.value);
@@ -28,7 +35,7 @@ function ModalWithDateSelection({ onSubmit }) {
     const userQuery = new UserQuery();
     userQuery.setDateStart(startDate);
     userQuery.setDateEnd(endDate);
-    userQuery.setLocation("Los Angeles, California");
+    userQuery.setLocation(location);
 
     // Initialize gRPC client.
     try {
