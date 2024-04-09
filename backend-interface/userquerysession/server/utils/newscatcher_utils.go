@@ -18,39 +18,36 @@ func FetchDataFromAPI(query []string) (interface{}, error) {
 	// Define the API endpoint
 	apiURL := "https://api.newscatcherapi.com/v2/search"
 
-	// Define the query parameters
-	queryParams := url.Values{}
-	queryParams.Set("from", query[0])
-	queryParams.Set("to", query[1])
-	queryParams.Set("q", query[2])
-	queryParams.Set("lang", "en")
-	queryParams.Set("countries", "US")
-	queryParams.Set("ranked_only", "true")
-	queryParams.Set("sort_by", "rank")
-	queryParams.Set("page_size", "100")
-	queryParams.Set("page", "1")
-
-	// Encode the query parameters
-	apiURL += "?" + queryParams.Encode()
-
-	// Create a new HTTP request
-	req, err := http.NewRequest("GET", apiURL, nil)
-	if err != nil {
-		return map[string]interface{}{}, status.Errorf(
-			codes.Internal,
-			fmt.Sprintf("Error creating request: %v", err))
-	}
-
-	// Set the API key header
-	req.Header.Set("x-api-key", "kQ1Wu1fjWRZnriofBhD3ndcvOErvzkHld8UF5LttdNs")
-
 	// Initialize allArticles map to store articles from multiple pages
 	allArticles := make(map[string]interface{})
-	totalPages := 5
+	page := 1
 
-	for page := 1; page <= totalPages; page++ {
-		// Wait for 1 second between each call
-		time.Sleep(1 * time.Second)
+	for page < 6 {
+		// Define the query parameters
+		queryParams := url.Values{}
+		queryParams.Set("from", query[0])
+		queryParams.Set("to", query[1])
+		queryParams.Set("q", query[2])
+		queryParams.Set("lang", "en")
+		queryParams.Set("countries", "US")
+		queryParams.Set("ranked_only", "true")
+		queryParams.Set("sort_by", "rank")
+		queryParams.Set("page_size", "100")
+		queryParams.Set("page", fmt.Sprintf("%d", page))
+
+		// Encode the query parameters
+		fullURL := apiURL + "?" + queryParams.Encode()
+
+		// Create a new HTTP request
+		req, err := http.NewRequest("GET", fullURL, nil)
+		if err != nil {
+			return map[string]interface{}{}, status.Errorf(
+				codes.Internal,
+				fmt.Sprintf("Error creating request: %v", err))
+		}
+
+		// Set the API key header
+		req.Header.Set("x-api-key", "kQ1Wu1fjWRZnriofBhD3ndcvOErvzkHld8UF5LttdNs")
 
 		// Send the HTTP request
 		client := http.Client{}
@@ -69,13 +66,6 @@ func FetchDataFromAPI(query []string) (interface{}, error) {
 			return map[string]interface{}{}, fmt.Errorf("Error decoding response: %v", err)
 		}
 
-		totalHits := 0
-		if totalHitsFloat, ok := result["total_hits"].(float64); ok {
-			totalHits = int(totalHitsFloat)
-		}
-
-		fmt.Printf("Number of articles fetched for %s: %d\n", query[2], totalHits)
-
 		if len(allArticles) == 0 {
 			allArticles = result
 		} else {
@@ -85,52 +75,15 @@ func FetchDataFromAPI(query []string) (interface{}, error) {
 			}
 			allArticles["articles"] = append(allArticles["articles"].([]interface{}), articles...)
 		}
+		page++
+		if page > int(result["total_pages"].(float64)) {
+			break
+		}
+		// Wait for 1 second between each call
+		time.Sleep(1 * time.Second)
 	}
 
 	articles := allArticles["articles"]
-	// if articles != nil {
-	// 	articles, ok := articles.([]interface{})
-	// 	if !ok {
-	// 		return models.Articles{}, fmt.Errorf("Error: articles is not a slice")
-	// 	}
-
-	// for _, articleItem := range articles {
-	// 	articleMap, ok := articleItem.(map[string]interface{})
-	// 	if !ok {
-	// 		return models.Articles{}, fmt.Errorf("Article Map cannot be converted to an interface")
-	// 	}
-
-	// 	ranks := articleMap["rank"]
-	// 	fmt.Println(ranks)
-
-	// 	// Extract fields from the article map
-	// 	rank, _ := articleMap["rank"].(float64)
-	// 	location, _ := articleMap["location"].(string)
-	// 	title, _ := articleMap["title"].(string)
-	// 	excerpt, _ := articleMap["excerpt"].(string)
-	// 	summary, _ := articleMap["summary"].(string)
-	// 	link, _ := articleMap["link"].(string)
-	// 	author, _ := articleMap["author"].(string)
-	// 	publishedDate, _ := articleMap["published_date"].(string)
-	// 	imageLink, _ := articleMap["media"].(string)
-	// 	topic, _ := articleMap["topic"].(string)
-
-	// 	// Create a new models.Article and append to the slice
-	// 	processedArticle := models.Article{
-	// 		Rank:          rank,
-	// 		Location:      location,
-	// 		Title:         title,
-	// 		Excerpt:       excerpt,
-	// 		Summary:       summary,
-	// 		Link:          link,
-	// 		Author:        author,
-	// 		PublishedDate: publishedDate,
-	// 		ImageLink:     imageLink,
-	// 		Topic:         topic,
-	// 	}
-	// 	processedArticles = append(processedArticles, processedArticle)
-	// }
-
 	fmt.Println("Sanity Check")
 	return articles, nil
 }
