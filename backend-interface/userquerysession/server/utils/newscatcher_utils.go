@@ -7,21 +7,19 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/shanyachaubey/Whats_Happenin-A_big_data_project/backend-interface/userquerysession/server/models"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
 // Function to fetch data from Newscatcher API based on query parameters
-func FetchDataFromAPI(query []string) (models.Articles, error) {
-	var processedArticles models.Articles
+func FetchDataFromAPI(query []string) (interface{}, error) {
+	// var processedArticles models.Articles
 
 	// Define the API endpoint
 	apiURL := "https://api.newscatcherapi.com/v2/search"
 
 	// Define the query parameters
 	queryParams := url.Values{}
-	queryParams.Set("lang", "en")
 	queryParams.Set("from", query[0])
 	queryParams.Set("to", query[1])
 	queryParams.Set("q", query[2])
@@ -38,7 +36,7 @@ func FetchDataFromAPI(query []string) (models.Articles, error) {
 	// Create a new HTTP request
 	req, err := http.NewRequest("GET", apiURL, nil)
 	if err != nil {
-		return models.Articles{}, status.Errorf(
+		return map[string]interface{}{}, status.Errorf(
 			codes.Internal,
 			fmt.Sprintf("Error creating request: %v", err))
 	}
@@ -52,13 +50,13 @@ func FetchDataFromAPI(query []string) (models.Articles, error) {
 
 	for page := 1; page <= totalPages; page++ {
 		// Wait for 1 second between each call
-		time.Sleep(2 * time.Second)
+		time.Sleep(1 * time.Second)
 
 		// Send the HTTP request
 		client := http.Client{}
 		resp, err := client.Do(req)
 		if err != nil {
-			return models.Articles{}, status.Errorf(
+			return map[string]interface{}{}, status.Errorf(
 				codes.Internal,
 				fmt.Sprintf("Error sending request: %v", err))
 		}
@@ -68,7 +66,7 @@ func FetchDataFromAPI(query []string) (models.Articles, error) {
 		var result map[string]interface{}
 		err = json.NewDecoder(resp.Body).Decode(&result)
 		if err != nil {
-			return models.Articles{}, fmt.Errorf("Error decoding response: %v", err)
+			return map[string]interface{}{}, fmt.Errorf("Error decoding response: %v", err)
 		}
 
 		totalHits := 0
@@ -83,54 +81,56 @@ func FetchDataFromAPI(query []string) (models.Articles, error) {
 		} else {
 			articles, ok := result["articles"].([]interface{})
 			if !ok {
-				return models.Articles{}, fmt.Errorf("Error: articles is not a slice")
+				return map[string]interface{}{}, fmt.Errorf("Error: articles is not a slice")
 			}
 			allArticles["articles"] = append(allArticles["articles"].([]interface{}), articles...)
 		}
 	}
 
 	articles := allArticles["articles"]
-	if articles != nil {
-		articles, ok := articles.([]interface{})
-		if !ok {
-			return models.Articles{}, fmt.Errorf("Error: articles is not a slice")
-		}
+	// if articles != nil {
+	// 	articles, ok := articles.([]interface{})
+	// 	if !ok {
+	// 		return models.Articles{}, fmt.Errorf("Error: articles is not a slice")
+	// 	}
 
-		for _, articleItem := range articles {
-			articleMap, ok := articleItem.(map[string]interface{})
-			if !ok {
-				return models.Articles{}, fmt.Errorf("Article Map cannot be converted to an interface")
-			}
+	// for _, articleItem := range articles {
+	// 	articleMap, ok := articleItem.(map[string]interface{})
+	// 	if !ok {
+	// 		return models.Articles{}, fmt.Errorf("Article Map cannot be converted to an interface")
+	// 	}
 
-			// Extract fields from the article map
-			rank, _ := articleMap["rank"].(int)
-			location, _ := articleMap["location"].(string)
-			title, _ := articleMap["title"].(string)
-			excerpt, _ := articleMap["excerpt"].(string)
-			summary, _ := articleMap["summary"].(string)
-			link, _ := articleMap["link"].(string)
-			author, _ := articleMap["author"].(string)
-			publishedDate, _ := articleMap["published_date"].(string)
-			imageLink, _ := articleMap["media"].(string)
-			topic, _ := articleMap["topic"].(string)
+	// 	ranks := articleMap["rank"]
+	// 	fmt.Println(ranks)
 
-			// Create a new models.Article and append to the slice
-			processedArticle := models.Article{
-				Rank:          rank,
-				Location:      location,
-				Title:         title,
-				Excerpt:       excerpt,
-				Summary:       summary,
-				Link:          link,
-				Author:        author,
-				PublishedDate: publishedDate,
-				ImageLink:     imageLink,
-				Topic:         topic,
-			}
-			processedArticles = append(processedArticles, processedArticle)
-		}
-	}
+	// 	// Extract fields from the article map
+	// 	rank, _ := articleMap["rank"].(float64)
+	// 	location, _ := articleMap["location"].(string)
+	// 	title, _ := articleMap["title"].(string)
+	// 	excerpt, _ := articleMap["excerpt"].(string)
+	// 	summary, _ := articleMap["summary"].(string)
+	// 	link, _ := articleMap["link"].(string)
+	// 	author, _ := articleMap["author"].(string)
+	// 	publishedDate, _ := articleMap["published_date"].(string)
+	// 	imageLink, _ := articleMap["media"].(string)
+	// 	topic, _ := articleMap["topic"].(string)
+
+	// 	// Create a new models.Article and append to the slice
+	// 	processedArticle := models.Article{
+	// 		Rank:          rank,
+	// 		Location:      location,
+	// 		Title:         title,
+	// 		Excerpt:       excerpt,
+	// 		Summary:       summary,
+	// 		Link:          link,
+	// 		Author:        author,
+	// 		PublishedDate: publishedDate,
+	// 		ImageLink:     imageLink,
+	// 		Topic:         topic,
+	// 	}
+	// 	processedArticles = append(processedArticles, processedArticle)
+	// }
 
 	fmt.Println("Sanity Check")
-	return processedArticles, nil
+	return articles, nil
 }

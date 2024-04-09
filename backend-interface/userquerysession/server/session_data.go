@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log"
 
-
 	pb "github.com/shanyachaubey/Whats_Happenin-A_big_data_project/backend-interface/userquerysession/proto"
 	utils "github.com/shanyachaubey/Whats_Happenin-A_big_data_project/backend-interface/userquerysession/server/utils"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -27,7 +26,7 @@ func (server *Server) StartSession(ctx context.Context, uq *pb.UserQuery) (*pb.U
 		)
 	}
 
-	res, err := utils.InsertDataMongo(ctx, uq.DateStart, uq.DateEnd, uq.Location, articles)
+	res, err := utils.InsertDataMongo(ctx, uq.Location, articles)
 	if err != nil {
 		return nil, err
 	}
@@ -36,8 +35,8 @@ func (server *Server) StartSession(ctx context.Context, uq *pb.UserQuery) (*pb.U
 	if err != nil {
 		return nil, err
 	}
-        
-        log.Printf("Oid is: %v", oid)
+
+	log.Printf("Oid is: %v", oid)
 
 	_, err = utils.MakePythonPipelineRequest(oid.Hex())
 	if err != nil {

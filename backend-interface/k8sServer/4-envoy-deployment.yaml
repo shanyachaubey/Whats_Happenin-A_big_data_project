@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: envoy
-        image: anakin1612/envoy:windows #last stable version {e0, prodBeta_1, prodBeta00=arm}
+        image: anakin1612/envoy:macos_1 #last stable version {e0, prodBeta_1, prodBeta00=arm}
         ports:
         - containerPort: 8888
         - containerPort: 1337

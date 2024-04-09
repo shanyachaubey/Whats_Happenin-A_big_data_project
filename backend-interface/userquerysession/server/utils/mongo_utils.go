@@ -17,9 +17,9 @@ import (
 )
 
 func getCollection() *mongo.Collection {
-        uri := fmt.Sprintf("mongodb://root:password@mongodb-0.mongo.%s.svc.cluster.local:27017/admin", namespace)
+	// uri := fmt.Sprintf("mongodb://root:password@mongodb-0.mongo.%s.svc.cluster.local:27017/admin", namespace)
 	// local testing uri
-	//uri := fmt.Sprintf("mongodb://root:password@localhost:27018/admin")
+	uri := fmt.Sprintf("mongodb://root:password@localhost:27018/admin")
 	clientOptions := options.Client().ApplyURI(uri).SetConnectTimeout(15 * time.Second)
 
 	client, err := mongo.Connect(context.Background(), clientOptions)
@@ -31,18 +31,14 @@ func getCollection() *mongo.Collection {
 	return collection
 }
 
-func InsertDataMongo(ctx context.Context, start_date string, end_date string, location string, articles models.Articles) (*mongo.InsertOneResult, error) {
+func InsertDataMongo(ctx context.Context, location string, articles interface{}) (*mongo.InsertOneResult, error) {
 	// Create a struct to hold the data to insert into MongoDB
 	insertData := struct {
-		StartDate string           `bson:"start_date"`
-		EndDate   string           `bson:"end_date"`
-		Location  string           `bson:"location"`
-		Articles  []models.Article `bson:"articles"`
+		Location string      `bson:"location"`
+		Articles interface{} `bson:"articles"`
 	}{
-		StartDate: start_date,
-		EndDate:   end_date,
-		Location:  location,
-		Articles:  articles,
+		Location: location,
+		Articles: articles,
 	}
 
 	collection := getCollection()
