@@ -90,7 +90,7 @@ func GetDataFromMongo(ctx context.Context, oid primitive.ObjectID) ([]byte, erro
 		if index >= 0 && index < len(result.Articles) {
 			article := result.Articles[index]
 			articleMap := map[string]string{
-				"rank":           fmt.Sprintf("%d", article.Rank),
+				"rank":           fmt.Sprintf("%.2f", article.Rank),
 				"location":       article.Location,
 				"title":          article.Title,
 				"excerpt":        article.Excerpt,
