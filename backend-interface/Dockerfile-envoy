@@ -1,5 +1,5 @@
 # Use the base Envoy image for your platform
-FROM --platform=linux/amd64 envoyproxy/envoy:v1.28.0
+FROM envoyproxy/envoy:v1.28.0
 
 # Copy the necessary files into the container
 COPY set_namespace.sh /tmp/set_namespace.sh
@@ -15,6 +15,5 @@ RUN chmod +x /tmp/set_namespace.sh && /bin/sh -c '/tmp/set_namespace.sh $NAMESPA
 # Expose the necessary ports
 EXPOSE 1337
 EXPOSE 8888
-
 
 CMD /usr/local/bin/envoy -c /etc/envoy.yaml -l debug --service-cluster proxy
