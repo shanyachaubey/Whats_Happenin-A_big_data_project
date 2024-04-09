@@ -135,5 +135,127 @@ proto.userquerysession.UserQueryServicePromiseClient.prototype.startSession =
 };
 
 
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.userquerysession.OverallRequest,
+ *   !proto.userquerysession.OverallResponse>}
+ */
+const methodDescriptor_UserQueryService_SendOverallResponse = new grpc.web.MethodDescriptor(
+  '/userquerysession.UserQueryService/SendOverallResponse',
+  grpc.web.MethodType.UNARY,
+  proto.userquerysession.OverallRequest,
+  proto.userquerysession.OverallResponse,
+  /**
+   * @param {!proto.userquerysession.OverallRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.userquerysession.OverallResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.userquerysession.OverallRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.userquerysession.OverallResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.userquerysession.OverallResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.userquerysession.UserQueryServiceClient.prototype.sendOverallResponse =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/userquerysession.UserQueryService/SendOverallResponse',
+      request,
+      metadata || {},
+      methodDescriptor_UserQueryService_SendOverallResponse,
+      callback);
+};
+
+
+/**
+ * @param {!proto.userquerysession.OverallRequest} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.userquerysession.OverallResponse>}
+ *     Promise that resolves to the response
+ */
+proto.userquerysession.UserQueryServicePromiseClient.prototype.sendOverallResponse =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/userquerysession.UserQueryService/SendOverallResponse',
+      request,
+      metadata || {},
+      methodDescriptor_UserQueryService_SendOverallResponse);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.userquerysession.TopicRequest,
+ *   !proto.userquerysession.TopicResponse>}
+ */
+const methodDescriptor_UserQueryService_SendTopicResponse = new grpc.web.MethodDescriptor(
+  '/userquerysession.UserQueryService/SendTopicResponse',
+  grpc.web.MethodType.UNARY,
+  proto.userquerysession.TopicRequest,
+  proto.userquerysession.TopicResponse,
+  /**
+   * @param {!proto.userquerysession.TopicRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.userquerysession.TopicResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.userquerysession.TopicRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.userquerysession.TopicResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.userquerysession.TopicResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.userquerysession.UserQueryServiceClient.prototype.sendTopicResponse =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/userquerysession.UserQueryService/SendTopicResponse',
+      request,
+      metadata || {},
+      methodDescriptor_UserQueryService_SendTopicResponse,
+      callback);
+};
+
+
+/**
+ * @param {!proto.userquerysession.TopicRequest} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.userquerysession.TopicResponse>}
+ *     Promise that resolves to the response
+ */
+proto.userquerysession.UserQueryServicePromiseClient.prototype.sendTopicResponse =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/userquerysession.UserQueryService/SendTopicResponse',
+      request,
+      metadata || {},
+      methodDescriptor_UserQueryService_SendTopicResponse);
+};
+
+
 module.exports = proto.userquerysession;
 

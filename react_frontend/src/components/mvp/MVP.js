@@ -1,21 +1,20 @@
 import React from 'react';
 import Navigation from './navBar.js';
-import Map from './map.js';
+import Map from '../map/map.js';
 import Animal from './animal.js';
-import App from '../bubble-chart copy/src/App.js';
+import CalSearch from './cal_search.js';
+import { LocationProvider } from '../commonUtils/Location.js';
 
 function MVP() {
   return (
-    <div style={{ display: 'flex' }}>
-      <div style={{ flex: 1 }}>
+    <LocationProvider>
+      <div>
         <Navigation />
         <Map />
+        <CalSearch />
         <Animal />
       </div>
-      <div style={{ flex: 1 }}>
-        <App />
-      </div>
-    </div>
+    </LocationProvider>
   );
 }
 
