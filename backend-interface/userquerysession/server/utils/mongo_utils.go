@@ -17,9 +17,9 @@ import (
 )
 
 func getCollection() *mongo.Collection {
-	// uri := fmt.Sprintf("mongodb://root:password@mongodb-0.mongo.%s.svc.cluster.local:27017/admin", namespace)
+	uri := fmt.Sprintf("mongodb://root:password@mongodb-0.mongo.%s.svc.cluster.local:27017/admin", namespace)
 	// local testing uri
-	uri := fmt.Sprintf("mongodb://root:password@localhost:27018/admin")
+	// uri := fmt.Sprintf("mongodb://root:password@localhost:27018/admin")
 	clientOptions := options.Client().ApplyURI(uri).SetConnectTimeout(15 * time.Second)
 
 	client, err := mongo.Connect(context.Background(), clientOptions)

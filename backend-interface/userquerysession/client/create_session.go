@@ -11,9 +11,9 @@ func startSession(c pb.UserQueryServiceClient) {
 	log.Println("---startSession was invoked---")
 
 	blog := &pb.UserQuery{
-		DateStart: "03/02/2024",
-		DateEnd:   "03/20/2024",
-		Location:  "Los Angeles, California",
+		DateStart: "2024/04/01",
+		DateEnd:   "2024/04/07",
+		Location:  "Boulder, Colorado",
 	}
 
 	res, err := c.StartSession(context.Background(), blog)
