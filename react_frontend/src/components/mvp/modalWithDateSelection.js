@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import './modalWithDateSelection.css'
-import { UserQueryServiceClient } from '../../proto/userquerysession_grpc_web_pb.js'
-import { UserQuery } from '../../proto/userquerysession_pb'
-import { useLocation } from '../commonUtils/Location.js'
+import './modalWithDateSelection.css';
+import { UserQueryServiceClient } from '../../proto/userquerysession_grpc_web_pb.js';
+import { UserQuery } from '../../proto/userquerysession_pb';
+import { useLocation } from '../commonUtils/Location.js';
+import Card from '../mvp/card.js';
 
 function ModalWithDateSelection({ onSubmit }) {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [showModal, setShowModal] = useState(false);
+  const [articles, setArticles] = useState([]); // Define articles state
   const { location } = useLocation();
 
   useEffect(() => {
@@ -25,7 +27,6 @@ function ModalWithDateSelection({ onSubmit }) {
     setEndDate(event.target.value);
   };
 
-
   const handleSubmit = () => {
     // Here you can perform any actions with the selected dates
     console.log('Selected Start Date:', startDate);
@@ -40,7 +41,7 @@ function ModalWithDateSelection({ onSubmit }) {
     // Initialize gRPC client.
     try {
       const client = new UserQueryServiceClient('http://127.0.0.1:1337');
-      console.log(client)
+      console.log(client);
 
       client.startSession(userQuery, {}, (err, response) => {
         console.log("Request went before error");
@@ -52,19 +53,21 @@ function ModalWithDateSelection({ onSubmit }) {
         }
         console.log("Request went after error");
 
-        const oidString = response.array[0]
+        const oidString = response.array[0];
         const byteMongoData = new Uint8Array(response.array[1]);
 
         const byteMongoArray = Array.from(byteMongoData);
         const byteMongoString = JSON.stringify(byteMongoArray);
         const byteMongoObject = JSON.parse(byteMongoString);
-        const base64String = convertTobase64encoded(byteMongoObject)
-        const base64Data = JSON.parse(base64String).oidResponse
-        const finalJSONString = convertToJSON(base64Data)
+        const base64String = convertTobase64encoded(byteMongoObject);
+        const base64Data = JSON.parse(base64String).oidResponse;
+        const finalJSONString = convertToJSON(base64Data);
 
         console.log("Received OID data:", oidString);
-        console.log("Received response data:", finalJSONString)
+        console.log("Received response data:", finalJSONString);
 
+        const articleData = JSON.parse(finalJSONString).articles;
+        setArticles(articleData); // Update the articles state
         const responseData = JSON.parse(finalJSONString).data_for_bubble;
         onSubmit(responseData, oidString);
       });
@@ -72,7 +75,7 @@ function ModalWithDateSelection({ onSubmit }) {
       console.error('Client Error:', error.code, error.message);
     }
     setShowModal(false);
-  }
+  };
 
   function convertTobase64encoded(jsonByteObject) {
     const decoder = new TextDecoder('utf-8');
@@ -85,7 +88,7 @@ function ModalWithDateSelection({ onSubmit }) {
 
   function convertToJSON(base64Data) {
     const decodedString = atob(base64Data);
-    return decodedString
+    return decodedString;
   }
 
   return (
@@ -122,13 +125,14 @@ function ModalWithDateSelection({ onSubmit }) {
           </div>
         </div>
       )}
-
+      {/* Render the Card component */}
+      <Card articles={articles} />
     </div>
   );
 }
 
 ModalWithDateSelection.propTypes = {
-  onSubmit: PropTypes.func.isRequired, // Validate onSubmit prop as a function
+  onSubmit: PropTypes.func.isRequired,
 };
 
 export default ModalWithDateSelection;
