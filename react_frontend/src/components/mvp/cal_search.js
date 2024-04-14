@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import ModalWithDateSelection from './modalWithDateSelection.js';
+//import DisplayArticleData from './modalWithDateSelection.js';
+import ParentComponent from '../mvp/ParentComponent.js';
 import './styles.css';
 import Bubble from '../bubble/bubble.js';
 
@@ -9,13 +11,17 @@ function CalSearch() {
     'Portland': 10,
     'Ranch': 10
   });
-
+  const [articleData, setArticleData] = useState({
+   'blaaaaa': 10
+  });
   const [OidString, setOid] = useState('')
 
-  const handleSubmit = (data, oidString) => {
+  const handleSubmit = (data, oidString,articleData) => {
     setBubbleData(data);
     setOid(oidString);
+    setArticleData(articleData);
   };
+
 
   return (
     <div>
@@ -28,7 +34,8 @@ function CalSearch() {
           <div className="col-md-6">
             <div className="row justify-content-center">
               <div className="col-md-2 d-flex justify-content-center" style={{ marginRight: '-10px' }}>
-                <ModalWithDateSelection onSubmit={handleSubmit} />
+              <ModalWithDateSelection onSubmit={handleSubmit} />
+
               </div>
               <div className="col-md-6 d-flex justify-content-center" style={{ marginLeft: '-10px' }}>
                 <div className="search-container">
@@ -39,11 +46,13 @@ function CalSearch() {
             </div>
             <div style={{ marginBottom: '20px' }}></div> {/* Buffer space */}
             {bubbleData !== null && <Bubble prop={[bubbleData, OidString]} />}
+            {bubbleData !== null && <ParentComponent articles={[articleData]} />}
           </div>
         </div>
       </div>
     </div>
   );
 }
+
 
 export default CalSearch;

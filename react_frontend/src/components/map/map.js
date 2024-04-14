@@ -49,7 +49,6 @@ function Map() {
 
     return () => map.remove();
   }, [setLocation]);
-
 }
 
 export default Map;

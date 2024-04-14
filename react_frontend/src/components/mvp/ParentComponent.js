@@ -1,47 +1,51 @@
-import React, { useState, useEffect } from 'react';
-import ModalWithDateSelection from '../mvp/modalWithDateSelection';
-import Card from '../mvp/card';
+import React from 'react';
+//import ModalWithDateSelection from '../mvp/modalWithDateSelection';
+//import { DisplayArticleData } from '../mvp/modalWithDateSelection';
+//import DisplayArticleData from '../bubble/bubble' 
 
-function ParentComponent() {
-  const [articles, setArticles] = useState([]);
+  let count = 0;
+function ParentComponent(article) {
+  count++;
+    console.log(count);
+console.log("check1check2", article);
+    // Call DisplayArticleData to get its return value
+ 
 
-  // Fetch articles data and update state
-  useEffect(() => {
-    // Your code to fetch articles data and update state goes here
-    // For example:
-    fetchArticlesData()
-      .then(data => {
-        setArticles(data);
-      })
-      .catch(error => {
-        console.error('Error fetching articles data:', error);
-      });
-  }, []); // Empty dependency array to run the effect only once
+    // Conditionally render based on the return value of DisplayArticleData
+    if (article && Array.isArray(article.articles) && article.articles.length > 0 && Array.isArray(article.articles[0])) {
+      console.log("badbing");
 
-  // Function to fetch articles data
-  const fetchArticlesData = async () => {
-    // Your code to fetch articles data goes here
-    // For example:
-    const response = await fetch('https://api.example.com/articles');
-    const data = await response.json();
-    return data.articles;
-  };
+      // Access the inner array
+      const innerArray = article.articles[0];
 
-  // Function to handle form submission from ModalWithDateSelection
-  const handleSubmit = (selectedArticles) => {
-    // Handle the selected articles here
-    console.log('Selected articles:', selectedArticles);
-  };
-
-  return (
-    <div>
-      {/* Render the ModalWithDateSelection component, passing onSubmit prop */}
-      <ModalWithDateSelection onSubmit={handleSubmit} articles={articles} />
-     
-      {/* Render the Card component */}
-      <Card articles={articles} />
-    </div>
-  );
+      return (
+          <div className="container">
+              <div className="row">
+                  {innerArray.map((article, index) => (
+                      <div className="col-md-4" key={index}>
+                          <div className="card">
+                              <img src={article.image_link} className="card-img-top" alt="Article Thumbnail" />
+                              <div className="card-body">
+                                  <h5 className="card-title">{article.title}</h5>
+                                  <p className="card-text">{article.excerpt}</p>
+                                  <p className="card-text">Author: {article.author}</p>
+                                  <p className="card-text">Rank: {article.rank}</p>
+                                  <p className="card-text">Topic: {article.topic}</p>
+                                  <a href={article.link} className="btn btn-primary">Read more</a>
+                              </div>
+                          </div>
+                      </div>
+                  ))}
+              </div>
+          </div>
+      );
+  } else {
+      return (
+          <div>
+              Count: {count}
+          </div>
+      );
+  }
 }
 
 export default ParentComponent;

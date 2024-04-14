@@ -13,7 +13,7 @@ function MVP() {
           <Navigation />
           <Map />
           <CalSearch />
-          <ParentComponent />
+          <ParentComponent/>
         </div>
       </LocationProvider>
     

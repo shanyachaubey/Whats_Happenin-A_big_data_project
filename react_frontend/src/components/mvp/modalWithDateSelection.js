@@ -4,13 +4,27 @@ import './modalWithDateSelection.css';
 import { UserQueryServiceClient } from '../../proto/userquerysession_grpc_web_pb.js';
 import { UserQuery } from '../../proto/userquerysession_pb';
 import { useLocation } from '../commonUtils/Location.js';
-import Card from '../mvp/card.js';
+//import Card from '../mvp/card.js';
+import ParentComponent from '../mvp/ParentComponent.js';
+// Define DisplayArticleData function on the same level as ModalWithDateSelection
+function DisplayArticleData(articles) {
+  //if (articles.length > 1) {
+    console.log("Princess Peach", articles);
+    if (Array.isArray(articles) && articles.length > 1) {
+      console.log("Princess Peach2", articles);
+      
+      return ParentComponent(articles);
+
+  } else {
+      // If articles is not an array or its length is not greater than 1, return "superman"
+      return "man";
+  }
+}
 
 function ModalWithDateSelection({ onSubmit }) {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [showModal, setShowModal] = useState(false);
-  const [articles, setArticles] = useState([]); // Define articles state
   const { location } = useLocation();
 
   useEffect(() => {
@@ -66,10 +80,12 @@ function ModalWithDateSelection({ onSubmit }) {
         console.log("Received OID data:", oidString);
         console.log("Received response data:", finalJSONString);
 
-        const articleData = JSON.parse(finalJSONString).articles;
-        setArticles(articleData); // Update the articles state
+        // Update articleData state
+       // const articleData= JSON.parse(finalJSONString).articles;
+       const articleData = JSON.parse(finalJSONString).articles;
         const responseData = JSON.parse(finalJSONString).data_for_bubble;
-        onSubmit(responseData, oidString);
+        onSubmit(responseData, oidString, articleData);
+    
       });
     } catch (error) {
       console.error('Client Error:', error.code, error.message);
@@ -125,14 +141,15 @@ function ModalWithDateSelection({ onSubmit }) {
           </div>
         </div>
       )}
-      {/* Render the Card component */}
-      <Card articles={articles} />
+  
     </div>
   );
+
 }
 
 ModalWithDateSelection.propTypes = {
   onSubmit: PropTypes.func.isRequired,
 };
 
+export { DisplayArticleData }; // Export DisplayArticleData function
 export default ModalWithDateSelection;
