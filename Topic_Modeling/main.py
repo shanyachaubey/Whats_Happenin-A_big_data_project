@@ -5,11 +5,16 @@ from pydantic import BaseModel
 from typing import List, Optional
 from functions import process_shrink_data
 import json
+import os
 
 # Connect to MongoDB
-client = MongoClient('mongodb://localhost:27017/')
-db = client['local']
-collection = db['test']
+namespace = os.getenv("NAMESPACE", "default")
+mongodb_uri = f"mongodb://root:password@mongodb-0.mongo.{namespace}.svc.cluster.local:27017/admin"
+client = MongoClient(mongodb_uri)
+print(client)
+
+db = client['userquery']
+collection = db['sessions']
 pipeline = [
     {
         '$project': {
@@ -43,7 +48,7 @@ async def get_favicon():
 class Article(BaseModel):
     rank: int
     title: str
-    excerpt: str
+    excerpt: Optional[str]=None
     summary: str
     link: str
     author: str
@@ -52,6 +57,8 @@ class Article(BaseModel):
 
 # Function to fetch articles by ObjectId 
 def get_articles_using_oid(oid: str) -> List[Article]:
+
+
     try:
         object_id = ObjectId(oid)
         article_data = collection.find_one({"_id": object_id})
@@ -83,6 +90,7 @@ async def update_mongo(oid: str = Query(..., description="Object ID of the docum
     """
     
     """
+    print(oid)
     articles = get_articles_using_oid(oid)
     location = get_location_using_oid(oid)
     articles = process_shrink_data(articles, location)
@@ -104,12 +112,10 @@ async def update_mongo(oid: str = Query(..., description="Object ID of the docum
         else:
             topics_count[topic] = 1
     
-    topics_proportion = {topic:(count/total)*100 for topic, count in topics_count.items()}
+    topics_proportion = {topic:round((count/total)*100,2) for topic, count in topics_count.items()}
 
-
-    
     # Setting the top_x number to be able to change this later
-    top_x = 10
+    top_x = 24
 
     topics = set(article.get("topic") for article in article_list)
     top_x_all_cat = sorted(range(len(article_list)), key = lambda i: article_list[i].get("rank"))[:top_x]
@@ -125,8 +131,8 @@ async def update_mongo(oid: str = Query(..., description="Object ID of the docum
     update_query = {
         "$set":{
             "articles":article_list,
-            "top_x_all_cat": top_x_all_cat,
-            "top_10_by_topics": top_x_by_topics,
+            "top_24_all_cat": top_x_all_cat,
+            "top_24_by_topics": top_x_by_topics,
             "data_for_bubble": topics_proportion
         }
     }

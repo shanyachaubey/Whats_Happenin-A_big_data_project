@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongo-statefulset
+spec:
+  selector:
+    matchLabels:
+      app: mongo
+  serviceName: "mongo"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mongo
+    spec:
+      containers:
+      - name: mongo
+        image: mongo
+        env:
+          - name: MONGO_INITDB_ROOT_USERNAME
+            valueFrom:
+              configMapKeyRef:
+                name: app-configmap
+                key: db_user
+          - name: MONGO_INITDB_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mongodb-password
+                key: db_password 
+        ports:
+        - containerPort: 27017
+        volumeMounts:
+          - name: ebs-mongo-pvc
+            mountPath: /data/db
+  volumeClaimTemplates:
+    - metadata:
+        name: ebs-mongo-pvc
+      spec:
+        resources:
+          requests:
+            storage: 4Gi
+        storageClassName: ebs-sc
+        accessModes:
+          - ReadWriteOnce

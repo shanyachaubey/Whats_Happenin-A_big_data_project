@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: envoy-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: envoy
+  template:
+    metadata:
+      labels:
+        app: envoy
+    spec:
+      containers:
+      - name: envoy
+        image: anakin1612/envoy:macos_3 #last stable version {e0, prodBeta_1, prodBeta00=arm}
+        ports:
+        - containerPort: 8888
+        - containerPort: 1337
+

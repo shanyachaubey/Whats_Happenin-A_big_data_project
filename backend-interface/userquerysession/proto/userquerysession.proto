@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package userquerysession;
+
+option go_package = "github.com/shanyachaubey/Whats_Happenin-A_big_data_project/backend-interface/userquerysession/proto";
+
+message UserQuery {
+    string id = 1;
+    string location = 2;
+    string date_start = 3;
+    string date_end = 4;
+}
+
+message UserID {
+    string id =1;
+    bytes overallresponse = 2;
+}
+
+message OverallRequest {
+    string oid = 2;
+}
+
+message OverallResponse {
+    bytes oidResponse = 1;
+}
+
+message TopicRequest {
+    string topic = 1;
+    string oid = 2;
+}
+
+message TopicResponse {
+    bytes articlesResponse = 1;
+}
+
+service UserQueryService {
+    rpc StartSession(UserQuery) returns (UserID);
+    rpc SendOverallResponse(OverallRequest) returns (OverallResponse);
+    rpc SendTopicResponse(TopicRequest) returns (TopicResponse);
+}
