@@ -5,7 +5,7 @@ import { UserQueryServiceClient } from '../../proto/userquerysession_grpc_web_pb
 import { UserQuery } from '../../proto/userquerysession_pb';
 import { useLocation } from '../commonUtils/Location.js';
 //import Card from '../mvp/card.js';
-import ParentComponent from '../mvp/ParentComponent.js';
+import ParentComponent from './Article_All.js';
 // Define DisplayArticleData function on the same level as ModalWithDateSelection
 function DisplayArticleData(articles) {
   //if (articles.length > 1) {

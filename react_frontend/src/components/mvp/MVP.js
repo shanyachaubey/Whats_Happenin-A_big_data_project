@@ -3,7 +3,7 @@ import Navigation from './navBar.js';
 import Map from '../map/map.js';
 import CalSearch from './cal_search.js';
 import { LocationProvider } from '../commonUtils/Location.js';
-import ParentComponent from '../mvp/ParentComponent.js';
+//import ParentComponent from '../mvp/ParentComponent.js';
 
 function MVP() {
   return (
@@ -13,7 +13,6 @@ function MVP() {
           <Navigation />
           <Map />
           <CalSearch />
-          <ParentComponent/>
         </div>
       </LocationProvider>
     

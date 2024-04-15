@@ -6,7 +6,7 @@ import { UserQueryServiceClient } from '../../proto/userquerysession_grpc_web_pb
 import { TopicRequest } from '../../proto/userquerysession_pb'
 
 
-function Bubble({ prop }) {
+function Bubble({ prop, onBubbleClick }) {
     const bubbleChartData = Object.entries(prop[0]).map(([label, value]) => ({ label, value: parseInt(value) }));
 
     const handleBubbleClick = (label) => {
@@ -41,6 +41,10 @@ function Bubble({ prop }) {
                 const finalJSONString = convertTobase64encoded(byteMongoObject)
 
                 console.log("Received Topic response data:", finalJSONString)
+                const dataSet= JSON.parse(finalJSONString).articles;
+
+                console.log("2kDemiGod:", dataSet)
+                onBubbleClick(label, dataSet);
             });
         } catch (error) {
             console.error('Client Error:', error.code, error.message);
@@ -65,13 +69,16 @@ function Bubble({ prop }) {
                 data={bubbleChartData}
                 bubbleClickFun={handleBubbleClick}
                 legendClickFun={handleLegendClick}
+            
             />
+           
         </div>
     );
 }
 
 Bubble.propTypes = {
-    prop: PropTypes.object.isRequired
+    prop: PropTypes.object.isRequired,
+    onBubbleClick: PropTypes.func.isRequired
 };
 
 export default Bubble;
