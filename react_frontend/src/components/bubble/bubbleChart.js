@@ -30,7 +30,12 @@ class BubbleChart extends Component {
     }
 
     renderChart() {
-        const { overflow, graph, data, height, width, padding, showLegend, legendPercentage } = this.props;
+        
+    
+        const { overflow, graph, data, height, width, showLegend, legendPercentage} = this.props;
+        const someFactor = 3; // Adjust as needed
+        const minimumSize = 36; // Adjust as needed
+        
         const svg = this.svgRef.current;
         svg.innerHTML = '';
         if (!overflow) {
@@ -40,10 +45,14 @@ class BubbleChart extends Component {
         }
         const bubblesWidth = showLegend ? width * (1 - (legendPercentage / 100)) : width;
         const legendWidth = width - bubblesWidth;
-        const color = d3.scaleOrdinal(d3.schemeCategory20c);
+        const color = d3.scaleOrdinal(d3.schemeCategory10)
         const pack = d3.pack()
             .size([bubblesWidth * graph.zoom, bubblesWidth * graph.zoom])
-            .padding(padding);
+            .padding(-5)
+            .radius(function(d) {
+                // Adjust the minimum size of the bubbles here
+                return Math.max(d.value * someFactor, minimumSize);
+            });
         const root = d3.hierarchy({ children: data })
             .sum(function (d) { return d.value; })
             .sort(function (a, b) { return b.value - a.value; })
@@ -59,6 +68,7 @@ class BubbleChart extends Component {
             this.renderLegend(svg, legendWidth, height, bubblesWidth, nodes, color);
         }
     }
+    
 
     renderBubbles(svg, width, nodes, color) {
         const { graph, bubbleClickFun, valueFont, labelFont } = this.props;
@@ -100,7 +110,7 @@ class BubbleChart extends Component {
             .style("fill", () => { return valueFont.color ? valueFont.color : '#000'; })
             .style("stroke", () => { return valueFont.lineColor ? valueFont.lineColor : '#000'; })
             .style("stroke-width", () => { return valueFont.lineWeight ? valueFont.lineWeight : 0; })
-            .text(function (d) { return d.value; });
+            .text(function (d) { return d.value + "%"; });
         node.append("text")
             .attr("class", "label-text")
             .style("font-size", `${labelFont.size}px`)
@@ -140,7 +150,7 @@ class BubbleChart extends Component {
     }
 
     renderLegend(svg, width, height, offset, nodes, color) {
-        const { legendClickFun, legendFont } = this.props;
+        const { legendClickFun, legendFont, minLegendSize } = this.props;
         const bubble = d3.select('.bubble-chart');
         const bubbleHeight = bubble.node().getBBox().height;
         const legend = d3.select(svg).append("g")
@@ -190,8 +200,20 @@ class BubbleChart extends Component {
             .attr("x", (d) => { return legendFont.size + 10 })
             .attr("y", 0)
             .text((d) => { return d.label });
+    
+        // Ensure minimum legend size
+        texts.attr("transform", function (d, i) {
+            const box = this.getBBox();
+            if (box.width < minLegendSize) {
+                const scale = minLegendSize / box.width;
+                d3.select(this).select("text").attr("transform", `scale(${scale})`);
+            }
+            const yOffset = 20; // Adjust the offset value as needed
+            return `translate(0,${i * (legendFont.size + 10) + yOffset})`;
+        });
+        
     }
-}
+} 
 
 BubbleChart.propTypes = {
     overflow: PropTypes.bool,
@@ -232,12 +254,14 @@ BubbleChart.propTypes = {
     bubbleClickFun: PropTypes.func,
     legendClickFun: PropTypes.func,
     data: PropTypes.arrayOf(PropTypes.object),
+    minLegendSize: PropTypes.number, // Add this line
 };
+
 
 BubbleChart.defaultProps = {
     overflow: false,
     graph: {
-        zoom: .5,
+        zoom: .7,
         offsetX: 0.1,
         offsetY: 0.1,
     },
