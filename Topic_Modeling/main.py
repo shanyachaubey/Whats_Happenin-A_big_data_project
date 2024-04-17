@@ -3,9 +3,11 @@ from pymongo import MongoClient
 from bson import ObjectId 
 from pydantic import BaseModel
 from typing import List, Optional
-from functions import process_shrink_data
+from functions import process_shrink_data, get_insights
 import json
 import os
+from openai import OpenAI
+from dotenv import load_dotenv
 
 # Connect to MongoDB
 namespace = os.getenv("NAMESPACE", "default")
@@ -15,6 +17,12 @@ print(client)
 
 db = client['userquery']
 collection = db['sessions']
+
+#Shanya uncomment below for local testing
+# client = MongoClient('mongodb://localhost:27017/')
+# db = client['local']
+# collection = db['test']
+
 pipeline = [
     {
         '$project': {
@@ -57,7 +65,18 @@ class Article(BaseModel):
 
 # Function to fetch articles by ObjectId 
 def get_articles_using_oid(oid: str) -> List[Article]:
+    """
+    This function allows user to get the articles associated to a specific 
+    ObjectID in MongoDB
 
+    Args:
+        oid (str): ObjectId in Mongo
+
+    Returns:
+        Articles (List(Dict)): Returns a list of Dictionary of all articles within
+                               "articles" key of the Object within the ObjectID specified
+                               in input.
+    """
 
     try:
         object_id = ObjectId(oid)
@@ -73,6 +92,17 @@ def get_articles_using_oid(oid: str) -> List[Article]:
     
 # Function to fetch the location from MongoDB
 def get_location_using_oid(oid:str) -> str:
+    """
+    This function allows user to get the "location" associated to a specific 
+    ObjectID in MongoDB
+
+    Args:
+        oid (str): ObjectId in Mongo
+
+    Returns:
+        location (str): Returns a string which is the location from which 
+                        the articles are from within that ObjectID
+    """
     try:
         object_id = ObjectId(oid)
         data = collection.find_one({"_id": object_id})
@@ -88,7 +118,18 @@ def get_location_using_oid(oid:str) -> str:
 @app.put("/articles")
 async def update_mongo(oid: str = Query(..., description="Object ID of the document to fetch articles for")):
     """
-    
+    This function performs various types of text processing on the articles within
+    "articles" key of MongoDB. Further duplicate articles are removed, topic modeling
+    is performed on each article and the respective topics are assigned to each article. 
+    Then a list of indices are created for the top 24 articles within the corpus, list 
+    of indices of top 24 articles in each category. The new data is added to the Object
+    retrieved using the ObjectID and then updated in MongoDB
+
+    Args: 
+        oid (str): ObjectID in MongoDB
+
+    Returns:
+        nothing, simply updates the MongoDB database
     """
     print(oid)
     articles = get_articles_using_oid(oid)
@@ -120,6 +161,16 @@ async def update_mongo(oid: str = Query(..., description="Object ID of the docum
     topics = set(article.get("topic") for article in article_list)
     top_x_all_cat = sorted(range(len(article_list)), key = lambda i: article_list[i].get("rank"))[:top_x]
 
+    num_summaries = 5
+
+    summaries = []
+    for index in top_x_all_cat[:num_summaries]:
+        article = article_list[index]
+        summary = article.get("summary", "")[:1800]
+        summaries.append(summary)
+    
+    top_x_insights = get_insights(summaries)
+
     top_x_by_topics = {topic: [] for topic in topics}
     
     for topic in topics:
@@ -128,12 +179,25 @@ async def update_mongo(oid: str = Query(..., description="Object ID of the docum
         top_x_indices = [article_list.index(article) for article in top_x_topic]
         top_x_by_topics[topic] = top_x_indices
 
+    topic_summaries = {topic: [] for topic in topics}
+    for topic, indices in top_x_by_topics.items():
+        for index in indices[:num_summaries]:
+            summary = article_list[index].get("summary", "")[:1800]
+            topic_summaries[topic].append(summary)
+
+    # Applying get_insights for each set of summaries
+    topic_insights = {}
+    for topic, summaries in topic_summaries.items():
+        topic_insights[topic] = get_insights(summaries)
+
     update_query = {
         "$set":{
             "articles":article_list,
             "top_24_all_cat": top_x_all_cat,
             "top_24_by_topics": top_x_by_topics,
-            "data_for_bubble": topics_proportion
+            "data_for_bubble": topics_proportion,
+            "top_6_insights": top_x_insights,
+            "top_insights_by_topic": topic_insights
         }
     }
     collection.update_one({"_id": ObjectId(oid)}, update_query)  

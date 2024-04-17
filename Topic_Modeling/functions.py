@@ -34,6 +34,11 @@ from gensim.corpora import Dictionary
 from gensim.models import LdaModel
 from gensim.parsing.preprocessing import remove_stopwords 
 
+# Modules for insight generation via OpenAI
+import os
+from dotenv import load_dotenv
+from openai import OpenAI
+
 
 def process_string(text):
 
@@ -233,7 +238,7 @@ def predict_category(model, new_summaries):
     dictionary = Dictionary.load('dictionary.pkl')
     topic_dictionary = {
                         0: "Community",
-                        1: "Hard News",
+                        1: "Difficult News",
                         2: "Sports",
                         3: "Business",
                         4: "Entertainment",
@@ -322,18 +327,18 @@ def process_shrink_data(articles, location):
     
     for item in articles:
         
-        #Condition to continue to next iteration if str present
+        # Condition to continue to next iteration if str present
         
         regex_pattern = rf'Reporting by .{{0,50}} in {location}'
         if re.search(regex_pattern, item.summary):
             continue
 
-        #Get title
+        # Get title
         if item.title == None:
             continue
         title = process_title(item.title)
         
-        #Get excerpt
+        # Get excerpt
         if item.excerpt == None:
             excerpt = "Go to Link to find out more about this article"
         else:
@@ -379,4 +384,67 @@ def process_shrink_data(articles, location):
     json_output = json.dumps(articles_json, ensure_ascii=False)
 
     return json_output
+
+def make_content(summaries):
+    """
+    This fucntion takes in the list of summaries and converts it into a message
+    that can be used to prompt Open AI gpt 4 model
+
+    Args: 
+        summaries (List(str))
+
+    Returns:
+        content (str): A concatenated string which will serve as input
+                       for the "content" field in "user" of messages in 
+                       the OpenAI params
+    """
+    string1 = "Take the news articles as List of strings below and carefully find the most exciting insight out of each article in the list provided to you. The insight for each article must not be shorter than 10 tokens or longer than 15 tokens. Make the insight overly dramatic and informative. Imagine being a news anchor and informing the public about main insights out of each article. The output must be a python list of strings where each string is the insight of respective articles in input list of string. \nInput: "
+    string2 = str(summaries)
+    content = string1+string2
+    return content
+
+
+
+def get_insights(summaries):
+    """
+    This function takes in the list of summaries from top all category
+    indices and top indices of each category and outputs list of strings that are insights
+    based on the article summary.
+
+    Args:
+        summaries (List(str)): List of string of the entire body of the article
+        client (str): Initializing OpenAI
+    Returns:
+        insights (List(str)): List of string of the insights from each article
+    """
+
+    load_dotenv()
+
+    client = OpenAI()
+
+    response = client.chat.completions.create(
+    model="gpt-4",
+    messages=[
+        {
+        "role": "system",
+        "content": "You are a news reporter who knows which information is important and are able to extract the most valuable piece of information from a list of given articles. You are creative, factual and do not misinterpret news and have no bias in your reporting."
+        },
+        {
+        "role": "user",
+        "content": make_content(summaries)
+        }
+    ],
+    temperature=0.72,
+    max_tokens=256,
+    top_p=1,
+    frequency_penalty=0.24,
+    presence_penalty=0
+    )
+
+    string_response = response.choices[0].message.content
+
+    items = string_response[1:-1].split('", "')
+    insights = [item.replace('"', '') for item in items]
+
+    return insights
 
