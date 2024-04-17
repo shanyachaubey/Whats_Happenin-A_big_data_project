@@ -1,0 +1,23 @@
+.vanta-container {
+    position: relative;
+    width: 100%;
+    height: max-content; /* Set the height or make it responsive as needed */
+}
+
+.content-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 2; /* Ensures content is on top of the Vanta background */
+}
+
+#map {
+    height: 675px !important; /* Set your desired height */
+    width: 100% !important; /* Set to 100% to take full width of the container element */
+  }
+  
+
+/* Ensure that other content is styled appropriately to look good over the background */
+/* For instance, ensuring text is readable etc., might require additional styles */

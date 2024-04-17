@@ -110,7 +110,7 @@ function ModalWithDateSelection({ onSubmit }) {
   return (
     <div>
       <button className="btn btn-primary" onClick={() => setShowModal(true)} style={{ padding: '0', border: 'none', background: 'none', width: '60px', height: '60px' }}>
-        <img src="https://cdn-icons-png.flaticon.com/512/1427/1427965.png" alt="Open Modal" style={{ width: '100%', height: '100%' }} />
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSLGHzaEkIlKtfis5qQIjLi9KVpgyTNa5AQT-swB7whAw&s" alt="Open Modal" style={{ width: '100%', height: '100%' }} />
       </button>
 
       {showModal && (
