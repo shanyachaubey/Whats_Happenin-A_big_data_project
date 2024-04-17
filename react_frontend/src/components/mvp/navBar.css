@@ -1,0 +1,16 @@
+.navbar {
+    padding-left: 45px !important; /* Add padding to the whole navbar if needed */
+    padding-right: 45px !important; /* Add padding to the whole navbar if needed */
+}
+
+.nav-link {
+    color: #FFA500 !important; /* Dark orange color */
+    font: bolder;
+    font-weight: bolder;
+}
+
+.nav-link:hover {
+    color: #ffa500 !important; /* Lighter orange for hover */
+    font: bolder;
+    font-weight: bolder;
+}
