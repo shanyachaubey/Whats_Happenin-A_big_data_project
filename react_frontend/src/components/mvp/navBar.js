@@ -1,7 +1,7 @@
 import React from 'react';
 import { Navbar, Nav, Container } from 'react-bootstrap';
 import 'jquery-ui/ui/widgets/datepicker'; 
-import logo from '../../utils/images/whatsHappeninLogo.jpeg'
+import logo from '../../utils/images/whatshappeninLogo.jpeg'
 import './navBar.css'  // Make sure your CSS is properly linked and set up
 
 function Navigation() {
