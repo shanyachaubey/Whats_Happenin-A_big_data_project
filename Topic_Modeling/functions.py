@@ -68,6 +68,15 @@ def process_string(text):
 
 
 def remove_url(string):
+    """
+    This function removes the url for topic modeling
+
+    Args:
+        string(str): Input string
+
+    Returns:
+        url_pattern.sub(''. string)(str): String without URLs
+    """
 
     url_pattern = re.compile(r'https?://\S+|www\.\S+')
 
@@ -238,7 +247,7 @@ def predict_category(model, new_summaries):
     dictionary = Dictionary.load('dictionary.pkl')
     topic_dictionary = {
                         0: "Community",
-                        1: "Difficult News",
+                        1: "Sensitive News",
                         2: "Sports",
                         3: "Business",
                         4: "Entertainment",
@@ -314,7 +323,9 @@ def process_shrink_data(articles, location):
         location (str): The location used when querying to newscatcherAPI in the backend
 
     Returns:
-        json(List(json))
+        json_output(List(json/dict)): A list of dictionaries/json where each item is the 
+                                      processed article with topic assigned and title formatted
+                                      for frontend to use.
     
     """
     
@@ -398,7 +409,7 @@ def make_content(summaries):
                        for the "content" field in "user" of messages in 
                        the OpenAI params
     """
-    string1 = "Take the news articles as List of strings below and carefully find the most exciting insight out of each article in the list provided to you. The insight for each article must not be shorter than 10 tokens or longer than 15 tokens. Make the insight overly dramatic and informative. Imagine being a news anchor and informing the public about main insights out of each article. The output must be a python list of strings where each string is the insight of respective articles in input list of string. \nInput: "
+    string1 = "Take the news articles as List of strings below and carefully find the most exciting insight out of each article in the list provided to you. The insight for each article must not be shorter than 10 tokens or longer than 20 tokens. Make the insight overly dramatic and informative. Make it so it sounds like a conversation and you're updaing them about what's happening.  Imagine you are a news anchor and informing the public about main insights out of each article. There should be no apostrophe in the string. The output must be a stings separated by \\\"^^^\\\" where each string is the insight of respective articles in input list of string. Do not put double quotes around each string The desired format is: insight1^^^insight2^^^insight3\n.\\nInput: "
     string2 = str(summaries)
     content = string1+string2
     return content
@@ -423,11 +434,14 @@ def get_insights(summaries):
     client = OpenAI()
 
     response = client.chat.completions.create(
-    model="gpt-4",
+    model="gpt-4-turbo",
     messages=[
         {
         "role": "system",
-        "content": "You are a news reporter who knows which information is important and are able to extract the most valuable piece of information from a list of given articles. You are creative, factual and do not misinterpret news and have no bias in your reporting."
+        "content": "You are a news reporter who knows which information is important and are able to\
+              extract the most valuable piece of information from a list of given articles. \
+                You are creative, factual and do not misinterpret news and have no bias in your \
+                    reporting."
         },
         {
         "role": "user",
@@ -443,8 +457,8 @@ def get_insights(summaries):
 
     string_response = response.choices[0].message.content
 
-    items = string_response[1:-1].split('", "')
-    insights = [item.replace('"', '') for item in items]
+    insights = string_response.split('^^^')
+    insights = json.dumps(insights)
 
     return insights
 
