@@ -6,6 +6,7 @@ import { UserQuery } from '../../proto/userquerysession_pb';
 import { useLocation } from '../commonUtils/Location.js';
 //import Card from '../mvp/card.js';
 import ParentComponent from './Article_All.js';
+import Loader from '../mvp/loader.js';
 // Define DisplayArticleData function on the same level as ModalWithDateSelection
 function DisplayArticleData(articles) {
   //if (articles.length > 1) {
@@ -22,11 +23,12 @@ function DisplayArticleData(articles) {
 }
 
 function ModalWithDateSelection({ onSubmit }) {
+  const [loading, setLoading] = useState(false);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [showModal, setShowModal] = useState(false);
   const { location } = useLocation();
-
+  
   useEffect(() => {
     if (location) {
       console.log('Received data in modalWithDateSelection:', location);
@@ -42,15 +44,16 @@ function ModalWithDateSelection({ onSubmit }) {
   };
 
   const handleSubmit = () => {
+    setLoading(true);
     // Here you can perform any actions with the selected dates
     console.log('Selected Start Date:', startDate);
     console.log('Selected End Date:', endDate);
 
     // Your code to submit form data here
     const userQuery = new UserQuery();
-    userQuery.setDateStart(startDate);
-    userQuery.setDateEnd(endDate);
-    userQuery.setLocation(location);
+    userQuery.setDateStart('2024-04-08');
+    userQuery.setDateEnd('2024-04-15');
+    userQuery.setLocation('Boulder, Colorado');
 
     // Initialize gRPC client.
     try {
@@ -58,6 +61,7 @@ function ModalWithDateSelection({ onSubmit }) {
       console.log(client);
 
       client.startSession(userQuery, {}, (err, response) => {
+       
         console.log("Request went before error");
 
         if (err) {
@@ -76,7 +80,11 @@ function ModalWithDateSelection({ onSubmit }) {
         const base64String = convertTobase64encoded(byteMongoObject);
         const base64Data = JSON.parse(base64String).oidResponse;
         const finalJSONString = convertToJSON(base64Data);
-
+        
+          // Handle response
+          setLoading(false); // Set loading to false when data fetching completes
+      
+    
         console.log("Received OID data:", oidString);
         console.log("Received response data:", finalJSONString);
 
@@ -84,7 +92,8 @@ function ModalWithDateSelection({ onSubmit }) {
        // const articleData= JSON.parse(finalJSONString).articles;
        const articleData = JSON.parse(finalJSONString).articles;
         const responseData = JSON.parse(finalJSONString).data_for_bubble;
-        onSubmit(responseData, oidString, articleData);
+        onSubmit(responseData, oidString, articleData, startDate, endDate, location);
+        
     
       });
     } catch (error) {
@@ -109,9 +118,11 @@ function ModalWithDateSelection({ onSubmit }) {
 
   return (
     <div>
-      <button className="btn btn-primary" onClick={() => setShowModal(true)} style={{ padding: '0', border: 'none', background: 'none', width: '60px', height: '60px' }}>
-        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSLGHzaEkIlKtfis5qQIjLi9KVpgyTNa5AQT-swB7whAw&s" alt="Open Modal" style={{ width: '100%', height: '100%' }} />
-      </button>
+     {!loading && (
+    <button className="btn btn-primary" onClick={() => setShowModal(true)} style={{ padding: '0', border: 'none', background: 'none', width: '60px', height: '60px' }}>
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSLGHzaEkIlKtfis5qQIjLi9KVpgyTNa5AQT-swB7whAw&s" alt="Open Modal" style={{ width: '100%', height: '100%' }} />
+    </button>
+  )}
 
       {showModal && (
         <div className="modal" tabIndex="-1" role="dialog" style={{ display: 'block' }}>
@@ -141,8 +152,9 @@ function ModalWithDateSelection({ onSubmit }) {
           </div>
         </div>
       )}
-  
+      {loading && <Loader />}
     </div>
+   
   );
 
 }

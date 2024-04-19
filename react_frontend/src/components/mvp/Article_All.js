@@ -38,7 +38,6 @@ function ParentComponent(article) {
   } else {
       return (
           <div>
-            Select Data
               
           </div>
       );

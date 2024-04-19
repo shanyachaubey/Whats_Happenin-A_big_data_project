@@ -46,6 +46,7 @@ function Bubble({ prop, onBubbleClick }) {
                 console.log("2kDemiGod:", dataSet)
                 onBubbleClick(label, dataSet);
             });
+            
         } catch (error) {
             console.error('Client Error:', error.code, error.message);
         }

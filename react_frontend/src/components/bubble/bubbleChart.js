@@ -9,6 +9,7 @@ class BubbleChart extends Component {
         this.renderChart = this.renderChart.bind(this);
         this.renderBubbles = this.renderBubbles.bind(this);
         this.renderLegend = this.renderLegend.bind(this);
+        this.numBubbles = 0;
     }
 
     componentDidMount() {
@@ -21,21 +22,32 @@ class BubbleChart extends Component {
             this.renderChart();
         }
     }
-
     render() {
-        const { width, height } = this.props;
+        // Destructure props
+        const { data } = this.props;
+        this.numBubbles = data ? data.length : 0;
+        // Calculate chart dimensions
+        const containerWidth = window.innerWidth * 0.9; // Adjust as needed
+        const containerHeight = window.innerHeight * 0.9; // Adjust as needed
+        const chartWidth = containerWidth * 1.5; // Increase width by a factor of 1.5
+        const chartHeight = containerHeight * 1.5; // Increase height by a factor of 1.5
+   
+        // Return JSX
         return (
-            <svg ref={this.svgRef} width={width} height={height} />
+            <div style={{ width: '100%', height: '100%' }}>
+                {/* Use chartWidth and chartHeight */}
+                <svg ref={this.svgRef} width={chartWidth} height={chartHeight} />
+            </div>
         );
     }
-
+   
+     
     renderChart() {
-        
-    
-        const { overflow, graph, data, height, width, showLegend, legendPercentage} = this.props;
-        const someFactor = 3; // Adjust as needed
-        const minimumSize = 36; // Adjust as needed
-        
+        const { overflow, graph, data, width, legendPercentage, showLegend } = this.props;
+        const someFactor = 5.5; // Adjust as needed
+        const minimumSize = 30; // Adjust as needed
+        const maxBubbleSize = 220; // Define the maximum size for the bubbles
+        const numBubbles = this.numBubbles;
         const svg = this.svgRef.current;
         svg.innerHTML = '';
         if (!overflow) {
@@ -44,15 +56,15 @@ class BubbleChart extends Component {
             svg.style.overflow = "visible";
         }
         const bubblesWidth = showLegend ? width * (1 - (legendPercentage / 100)) : width;
-        const legendWidth = width - bubblesWidth;
         const color = d3.scaleOrdinal(d3.schemeCategory10)
         const pack = d3.pack()
             .size([bubblesWidth * graph.zoom, bubblesWidth * graph.zoom])
-            .padding(-5)
+            .padding(-2.5)
             .radius(function(d) {
-                // Adjust the minimum size of the bubbles here
-                return Math.max(d.value * someFactor, minimumSize);
+                // Adjust the minimum and maximum size of the bubbles here
+                return Math.max(Math.min(d.value * someFactor, maxBubbleSize), minimumSize);
             });
+            
         const root = d3.hierarchy({ children: data })
             .sum(function (d) { return d.value; })
             .sort(function (a, b) { return b.value - a.value; })
@@ -63,10 +75,103 @@ class BubbleChart extends Component {
                 }
             });
         const nodes = pack(root).leaves();
-        this.renderBubbles(svg, bubblesWidth, nodes, color);
-        if (showLegend) {
-            this.renderLegend(svg, legendWidth, height, bubblesWidth, nodes, color);
+        if (numBubbles === 1) {
+            this.renderSoloBubbles(svg, bubblesWidth, nodes, color);
+        } else {
+            this.renderBubbles(svg, bubblesWidth, nodes, color);
         }
+        // Calculate the maximum radius of the bubbles
+        const maxRadius = d3.max(nodes, d => d.r);
+    
+        // Calculate the required width and height to accommodate the bubbles
+        const requiredWidth = bubblesWidth * graph.zoom + maxRadius * 2;
+        const requiredHeight = bubblesWidth * graph.zoom + maxRadius * 2;
+    
+        // Update the width and height of the SVG element
+        svg.setAttribute('width', requiredWidth);
+        svg.setAttribute('height', requiredHeight);
+    
+        // Update the transform of the bubble chart group
+        d3.select(svg).select(".bubble-chart")
+            .attr("transform", `translate(${maxRadius},${maxRadius})`);
+    }
+    renderSoloBubbles(svg, width, nodes, color) {
+        const { graph, bubbleClickFun, valueFont, labelFont } = this.props;
+        const bubbleChart = d3.select(svg).append("g")
+            .attr("class", "bubble-chart")
+            .attr("transform", function (d) {
+                const translateY = width * graph.offsetY-100;
+                return "translate(" + (width * graph.offsetX) + "," + translateY + ")";
+            });
+        const node = bubbleChart.selectAll(".node")
+            .data(nodes)
+            .enter().append("g")
+            .attr("class", "node")
+            .attr("transform", function (d) {
+                return "translate(" + d.x + "," + d.y + ")";
+            })
+            .on("click", function (d) {
+                bubbleClickFun(d.label);
+            });
+        node.append("circle")
+            .attr("id", function (d) { return d.id; })
+            .attr("r", function (d) { return d.r - (d.r * .04); })
+            .style("fill", function (d) { return d.data.color ? d.data.color : color(nodes.indexOf(d)); })
+            .style("z-index", 1)
+            .on('mouseover', function (d) { d3.select(this).attr("r", d.r * 1.04); })
+            .on('mouseout', function (d) {
+                const r = d.r - (d.r * 0.04);
+                d3.select(this).attr("r", r);
+            });
+        node.append("clipPath")
+            .attr("id", function (d) { return "clip-" + d.id; })
+            .append("use")
+            .attr("xlink:href", function (d) { return "#" + d.id; });
+        node.append("text")
+            .attr("class", "value-text")
+            .style("font-size", `24px`)
+            .attr("clip-path", function (d) { return "url(#clip-" + d.id + ")"; })
+            .style("font-weight", (d) => { return valueFont.weight ? valueFont.weight : 600; })
+            .style("font-family", valueFont.family)
+            .style("fill", () => { return valueFont.color ? valueFont.color : '#000'; })
+            .style("stroke", () => { return valueFont.lineColor ? valueFont.lineColor : '#000'; })
+            .style("stroke-width", () => { return valueFont.lineWeight ? valueFont.lineWeight : 0; });
+        node.append("text")
+            .attr("class", "label-text")
+            .style("font-size", `30x`)
+            .attr("clip-path", function (d) { return "url(#clip-" + d.id + ")"; })
+            .style("font-weight", (d) => { return labelFont.weight ? labelFont.weight : 600; })
+            .style("font-family", labelFont.family)
+            .style("fill", () => { return labelFont.color ? labelFont.color : '#000'; })
+            .style("stroke", () => { return labelFont.lineColor ? labelFont.lineColor : '#000'; })
+            .style("stroke-width", () => { return labelFont.lineWeight ? labelFont.lineWeight : 0; })
+            .text(function (d) { return d.label; });
+        d3.selectAll(".label-text").attr("x", function (d) {
+            const self = d3.select(this);
+            const width = self.node().getBBox().width;
+            return -(width / 2);
+        })
+            .style("opacity", function (d) {
+                const self = d3.select(this);
+                const width = self.node().getBBox().width;
+                d.hideLabel = width * 1.05 > (d.r * 2);
+                return d.hideLabel ? 0 : 1;
+            })
+            .attr("y", function (d) { return labelFont.size / 2 });
+        d3.selectAll(".value-text").attr("x", function (d) {
+            const self = d3.select(this);
+            const width = self.node().getBBox().width;
+            return -(width / 2);
+        })
+            .attr("y", function (d) {
+                if (d.hideLabel) {
+                    return valueFont.size / 3;
+                } else {
+                    return -valueFont.size * 0.5;
+                }
+            });
+        node.append("title")
+            .text(function (d) { return d.label; });
     }
     
 
@@ -75,8 +180,12 @@ class BubbleChart extends Component {
         const bubbleChart = d3.select(svg).append("g")
             .attr("class", "bubble-chart")
             .attr("transform", function (d) {
-                return "translate(" + (width * graph.offsetX) + "," + (width * graph.offsetY) + ")";
+                const translateY = width * graph.offsetY;
+                console.log("TranslateY:", translateY); // Log the translateY value
+                return "translate(" + (width * graph.offsetX) + "," + translateY + ")";
             });
+            
+          
         const node = bubbleChart.selectAll(".node")
             .data(nodes)
             .enter().append("g")
@@ -262,8 +371,8 @@ BubbleChart.defaultProps = {
     overflow: false,
     graph: {
         zoom: .7,
-        offsetX: 0.1,
-        offsetY: 0.1,
+        offsetX: -0.1,
+        offsetY: -2,
     },
     width: 700,
     height: 450,
