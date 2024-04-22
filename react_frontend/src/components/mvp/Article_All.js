@@ -4,6 +4,7 @@ import React from 'react';
 //import { DisplayArticleData } from '../mvp/modalWithDateSelection';
 //import DisplayArticleData from '../bubble/bubble' 
 //import ModalWithDateSelection from './modalWithDateSelection.js';
+import './Article.css'
 function ParentComponent(article) {
 
 
@@ -20,12 +21,12 @@ function ParentComponent(article) {
           {innerArray.map((article, index) => (
             <div className="col mb-4" key={index}>
               <div className="card h-100 d-flex flex-column">
-                <img src={article.image_link} className="card-img-top" alt="Article Thumbnail" />
+                <img src={article.image_link} className="card-img-top equal-image-size" alt="Article Thumbnail" />
                 <div className="card-body d-flex flex-column">
                   <h5 className="card-title">{article.title}</h5>
                   <p className="card-text">{article.excerpt}</p>
-                  <p className="card-text">Author: {article.author}</p>
-                  <p className="card-text">Topic: {article.topic}</p>
+                  <p className="card-text-author">Author: {article.author}</p>
+                  <p className="card-text-topic">Topic: {article.topic}</p>
                   <a href={article.link} className="mt-auto btn btn-primary">Read more</a>
                 </div>
               </div>

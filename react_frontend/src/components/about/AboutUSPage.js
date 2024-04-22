@@ -2,6 +2,7 @@ import React from 'react';
 import './AboutUSPageStyles.css'; // Ensure this CSS file has the correct styles
 import Navigation from '../mvp/navBar.js';
 import VantaBackground from '../background/VantaBackground'; // Make sure this component is correctly set up to display the Vanta effect
+import pmAboutUsPhoto from '../../utils/pmAboutUsPhoto.jpg';
 
 function AboutUS() {
     return (
@@ -14,7 +15,7 @@ function AboutUS() {
                     <div className="col-md-4 mb-4">
                         <div className="profile">
                             <a href="https://www.linkedin.com/in/shanya-chaubey-2a663169/" target="_blank" rel="noreferrer" title="Visit Shanya Chaubey's LinkedIn profile">
-                                <img src="https://media.licdn.com/dms/image/C4E03AQHGL1-GHi4wPg/profile-displayphoto-shrink_400_400/0/1569849280789?e=1716422400&v=beta&t=br-QISY-o11VLytT_Voz_wu-VcZWa-C6LPtskFKy778" alt="shanya"/>
+                                <img src={pmAboutUsPhoto} alt="shanya"/>
                             </a>
                             <h3>Shanya Chaubey</h3>
                             <p>Graduate Student @ Colorado Boulder. Project Manager. Head of Machine Learning.</p>
@@ -23,7 +24,7 @@ function AboutUS() {
                     <div className="col-md-4 mb-4">
                         <div className="profile">
                             <a href="https://www.linkedin.com/in/bill-martynowicz-12895121a/" target="_blank" rel="noreferrer" title="Visit Bill Martynowicz's LinkedIn profile">
-                                <img src="https://media.licdn.com/dms/image/D5603AQHXT41B-Eqg0Q/profile-displayphoto-shrink_800_800/0/1707510291653?e=1716422400&v=beta&t=i_QctShT-drj5u3vUUIhDbJlO1SXoKVIWssaQ9-OkFE" alt="bill"/>
+                                <img src="https://youtooz.com/cdn/shop/products/plankton_616x1000trim_min-u7dv.png?v=1663688264" alt="bill"/>
                             </a>
                             <h3>Bill Martynowicz</h3>
                             <p>Junior CS @ Colorado Boulder. Full-Stack Software Engineer. Does not own a MacBook.</p>
@@ -44,7 +45,7 @@ function AboutUS() {
                                 <img src="https://media.licdn.com/dms/image/D5603AQFwwH1EviPS5g/profile-displayphoto-shrink_800_800/0/1707370144433?e=1716422400&v=beta&t=vM5t-1w0QypstfXTQ2JDv3efdoQVsJ3FYHNE-4ieoxM" alt="justin"/>
                             </a>
                             <h3>Justin Jamrowski</h3>
-                            <p>Junior CS @ Colorado Boulder. Co-Project Manager. Full-Stack Software Engineer. UX Designer.</p>
+                            <p>Junior CS @ Colorado Boulder. Co-Project Manager. Front-End Software Engineer. UI/UX Designer.</p>
                         </div>
                     </div>
                     <div className="col-md-4 mb-4">

@@ -38,6 +38,7 @@ body {
     border-radius: 5px;
     display: flex;
     align-items: center; /* Align items vertically */
+    padding-top: 20px;
 }
 
 .search-container input[type="text"] {

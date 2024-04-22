@@ -1,0 +1,20 @@
+.equal-image-size {
+    width: 396px; /* Set the desired width */
+    height: 396px; /* Set the desired height */
+    object-fit: cover; /* Optional: maintain aspect ratio and cover container */
+}
+
+.card-title {
+    font-size: 24px; /* Set the desired font size */
+    font-weight: bold; /* Make the text bold */
+}
+
+.card-text {
+    font-size: 18px; /* Set the desired font size */
+}
+
+.card-text-author,
+.card-text-topic {
+    font-size: 16px; /* Set the author and topic font size to be smaller */
+    font-style: italic; /* Make the author and topic italic */
+}
