@@ -6,22 +6,21 @@ from typing import List, Optional
 from functions import process_shrink_data, get_insights
 import json
 import os
-from openai import OpenAI
-from dotenv import load_dotenv
+
 
 # Connect to MongoDB
-namespace = os.getenv("NAMESPACE", "default")
-mongodb_uri = f"mongodb://root:password@mongodb-0.mongo.{namespace}.svc.cluster.local:27017/admin"
-client = MongoClient(mongodb_uri)
-print(client)
+# namespace = os.getenv("NAMESPACE", "default")
+# mongodb_uri = f"mongodb://root:password@mongodb-0.mongo.{namespace}.svc.cluster.local:27017/admin"
+# client = MongoClient(mongodb_uri)
+# print(client)
 
-db = client['userquery']
-collection = db['sessions']
+# db = client['userquery']
+# collection = db['sessions']
 
 #Shanya uncomment below for local testing
-# client = MongoClient('mongodb://localhost:27017/')
-# db = client['local']
-# collection = db['test']
+client = MongoClient('mongodb://localhost:27017/')
+db = client['local']
+collection = db['test']
 
 pipeline = [
     {
@@ -161,9 +160,19 @@ async def update_mongo(oid: str = Query(..., description="Object ID of the docum
     topics = set(article.get("topic") for article in article_list)
     top_x_all_cat = sorted(range(len(article_list)), key = lambda i: article_list[i].get("rank"))[:top_x]
 
+    # Setting number of insights to generate
     num_summaries = 5
 
+    # Initializing summaries list
     summaries = []
+
+    # Setting a condition to take care of cases where if the number of items in top_x_all_cat
+    # is less than 5, we will use len(top_x_all_cat) to create insights
+
+
+    if len(top_x_all_cat)<num_summaries:
+        num_summaries = len(top_x_all_cat)
+
     for index in top_x_all_cat[:num_summaries]:
         article = article_list[index]
         summary = article.get("summary", "")[:1800]
@@ -179,25 +188,13 @@ async def update_mongo(oid: str = Query(..., description="Object ID of the docum
         top_x_indices = [article_list.index(article) for article in top_x_topic]
         top_x_by_topics[topic] = top_x_indices
 
-    topic_summaries = {topic: [] for topic in topics}
-    for topic, indices in top_x_by_topics.items():
-        for index in indices[:num_summaries]:
-            summary = article_list[index].get("summary", "")[:1800]
-            topic_summaries[topic].append(summary)
-
-    # Applying get_insights for each set of summaries
-    topic_insights = {}
-    for topic, summaries in topic_summaries.items():
-        topic_insights[topic] = get_insights(summaries)
-
     update_query = {
         "$set":{
             "articles":article_list,
             "top_24_all_cat": top_x_all_cat,
             "top_24_by_topics": top_x_by_topics,
             "data_for_bubble": topics_proportion,
-            "top_6_insights": top_x_insights,
-            "top_insights_by_topic": topic_insights
+            "top_6_insights": top_x_insights
         }
     }
     collection.update_one({"_id": ObjectId(oid)}, update_query)  
