@@ -11,8 +11,7 @@ function CalSearch() {
 
   const [selectedTopic, setSelectedTopic] = useState(null);
   const [dataSet, setDataSet] = useState(null); 
-  const [bubbleData, setBubbleData] = useState({
-    'Enter a location and a Date range \nto see What\'s Happenin':200});
+  const [bubbleData, setBubbleData] = useState(null);
     const [articleData, setArticleData] = useState(null);
 
   const [OidString, setOid] = useState('')
@@ -62,7 +61,7 @@ console.log("Hello",selectedLocation);
           <div className="col-md-6 d-flex justify-content-center" style={{ marginLeft: '-10px' }}>
             <div className="search-container">
               {/* Adding disabled attribute to make the input uneditable */}
-              <input type="text" id="search-input" placeholder="See What's Happenin" className="form-control" disabled />
+              <input type="text" id="search-input" placeholder="what's happenin in..." className="form-control" disabled />
             </div>
           </div>
         </div>
@@ -79,12 +78,22 @@ console.log("Hello",selectedLocation);
     <div className="col text-center"> {/* Center align the content */}
 
     {bubbleData !== null && dataSet ===null && selectedLocation &&
-  <h2 style={{ color: 'white' }}>{"All Top articles in "+ selectedLocation}<br />{"From: " +selectedStartDate + " to " + selectedEndDate}</h2>
+      <div style={{ fontFamily: 'Montserrat', color: 'black', backgroundColor: 'white', fontSize: '70px', fontWeight: 'bolder', borderRadius: '20px', padding: '20px' }}>
+      <h2 style={{fontFamily: 'Montserrat', fontWeight: 'bolder'}}>{"All Top Articles in " + selectedLocation}</h2>
+      <div style={{ fontSize: '24px', fontWeight: 'normal' }}>{"From: " + selectedStartDate + " to " + selectedEndDate}</div>
+  </div>
+  
 }
       {bubbleData !== null && dataSet ===null && <ParentComponent articles={[articleData]} />
 }
 
-      {dataSet!==null&& dataSet !== null && <h2 style={{ color: 'white' }}>{"Top " + selectedTopic + " articles"} in {selectedLocation}<br></br>From: {selectedStartDate} to {selectedEndDate} <button onClick={() => renderParentComponent()}>See All Articles</button></h2>}
+{dataSet !== null && dataSet !== null && (
+    <div style={{ fontFamily: 'Montserrat', color: 'black', backgroundColor: 'white', fontSize: '42px', fontWeight: 'bold', padding: '20px', borderRadius: '20px'}}>
+        <h2 style={{fontFamily: 'Montserrat', fontWeight: 'bolder'}}>{"Top " + selectedTopic + " Articles"} in {selectedLocation}</h2>
+        <div style={{ fontFamily: 'Montserrat', fontSize: '24px', fontWeight: 'normal' }}>From: {selectedStartDate} to {selectedEndDate}</div>
+        <button className='btn-primary' style={{ fontSize: '18px', width: 'auto', height: 'auto' }} onClick={() => renderParentComponent()}>See All Articles</button>
+    </div>
+)}
       
       {bubbleData !== null && dataSet !==null && <ArticleTopic articles={[dataSet]} />  }
       </div>

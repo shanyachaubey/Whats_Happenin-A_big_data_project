@@ -1,3 +1,26 @@
 .modal-title {
-    text-align: center;
+    text-align: center !important;
+}
+
+.btn-primary {
+    background-color: orange;
+    color: white; /* Text color */
+    border: none; /* Remove border */
+    padding: 10px 20px; /* Adjust padding */
+    border-radius: 10px;
+    /* Add any additional styles as needed */
+}
+
+.btn-primary:hover {
+    background-color: darkorange; /* Change background color on hover */
+    /* You can adjust other styles here as well */
+}
+
+.btn-secondary {
+    background-color: gray;
+    color: white; /* Text color */
+    border: none; /* Remove border */
+    padding: 10px 20px; /* Adjust padding */
+    border-radius: 10px;
+    /* Add any additional styles as needed */
 }

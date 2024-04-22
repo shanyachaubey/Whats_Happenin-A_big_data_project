@@ -119,7 +119,7 @@ function ModalWithDateSelection({ onSubmit }) {
   return (
     <div>
      {!loading && (
-    <button className="btn btn-primary" onClick={() => setShowModal(true)} style={{ padding: '0', border: 'none', background: 'none', width: '60px', height: '60px' }}>
+    <button className="btn btn-primary" onClick={() => setShowModal(true)} style={{ padding: '0', border: 'none', background: 'none', width: '60px', height: '70px', paddingTop: '20px', paddingBottom: '-30px' }}>
       <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSLGHzaEkIlKtfis5qQIjLi9KVpgyTNa5AQT-swB7whAw&s" alt="Open Modal" style={{ width: '100%', height: '100%' }} />
     </button>
   )}
@@ -129,7 +129,7 @@ function ModalWithDateSelection({ onSubmit }) {
           <div className="modal-dialog" role="document">
             <div className="modal-content">
               <div className="modal-header">
-                <h5 className="modal-title" >Article Date Range</h5>
+                <h5 className="modal-title" >Select Article Date Range</h5>
                 <button type="button" className="close" onClick={() => setShowModal(false)}>
                   <span>&times;</span>
                 </button>
