@@ -194,7 +194,7 @@ async def update_mongo(oid: str = Query(..., description="Object ID of the docum
             "top_24_all_cat": top_x_all_cat,
             "top_24_by_topics": top_x_by_topics,
             "data_for_bubble": topics_proportion,
-            "top_6_insights": top_x_insights
+            "top_5_insights": top_x_insights
         }
     }
     collection.update_one({"_id": ObjectId(oid)}, update_query)  
