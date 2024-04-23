@@ -5,6 +5,7 @@ import ParentComponent from './Article_All.js';
 import ArticleTopic from './Article_Topic.js';
 import './styles.css';
 import Bubble from '../bubble/bubble.js';
+import Insights from './insights.js';
 //import Loader from '../mvp/loader.js';
 
 function CalSearch() {
@@ -13,6 +14,7 @@ function CalSearch() {
   const [dataSet, setDataSet] = useState(null); 
   const [bubbleData, setBubbleData] = useState(null);
     const [articleData, setArticleData] = useState(null);
+    const [insightsData, setinsightsData] = useState(null);
 
   const [OidString, setOid] = useState('')
   const [selectedStartDate, setSelectedStartDate] = useState(''); // New state for start date
@@ -20,13 +22,14 @@ function CalSearch() {
   const [selectedLocation, setSelectedLocation] = useState(); // New state for location
   
 
-  const handleSubmit = (data, oidString,articleData, startDate, endDate, location) => {
+  const handleSubmit = (data, oidString,articleData, insights, startDate, endDate, location) => {
     setBubbleData(data);
     setOid(oidString);
     setArticleData(articleData);
     setSelectedStartDate(startDate); // Update selected start date
     setSelectedEndDate(endDate); // Update selected end date
     setSelectedLocation(location); // Update selected location
+    setinsightsData(insights);
     setDataSet(null);
   };
  
@@ -72,6 +75,7 @@ console.log("Hello",selectedLocation);
   </div>
 
   <div className="container"> {/* New container for ParentComponent */}
+  
   <div className="row justify-content-center"> {/* Center the row */}
     <div className="col-md-12"> {/* Adjust the column width */}
   
@@ -84,6 +88,10 @@ console.log("Hello",selectedLocation);
   </div>
   
 }
+<div style={{ fontFamily: 'Montserrat', color: 'black', backgroundColor: 'white', fontSize: '70px', fontWeight: 'bolder', borderRadius: '20px', padding: '20px' }}>
+{bubbleData !== null && dataSet ===null && <Insights stuff={{insightsData}} />}
+</div>
+
       {bubbleData !== null && dataSet ===null && <ParentComponent articles={[articleData]} />
 }
 
