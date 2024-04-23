@@ -81,7 +81,7 @@ console.log("Hello",selectedLocation);
     <div className="col-md-12"> {/* Adjust the column width */}
   
     <div className="col text-center"> {/* Center align the content */}
-    <div style={{ fontFamily: 'Montserrat', color: 'black', backgroundColor: 'white', fontSize: '70px', fontWeight: 'bolder', borderRadius: '20px', padding: '20px' }}>
+    <div style={{ fontFamily: 'Montserrat', color: 'black', fontSize: '70px', fontWeight: 'bolder', borderRadius: '20px', padding: '20px' }}>
 {bubbleData !== null && dataSet ===null && insightsData!==null && selectedLocation==='Boulder, Colorado' && <Insights stuff={{insightsData}} />}
 </div>
     {bubbleData !== null && dataSet ===null && selectedLocation &&
