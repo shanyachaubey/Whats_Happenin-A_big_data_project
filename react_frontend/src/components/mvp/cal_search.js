@@ -39,8 +39,8 @@ function CalSearch() {
     setinsightsData(null);
   };
   const renderParentComponent = () => {
-    return <ParentComponent articles={[articleData, insightsData]} />;
-
+    setDataSet(null)
+    return <ParentComponent articles={[articleData]} />;
   };
 
   return (

@@ -25,7 +25,7 @@ function ParentComponent(article) {
                   <p className="card-text">{article.excerpt}</p>
                   <p className="card-text-author">Author: {article.author}</p>
                   <p className="card-text-topic">Topic: {article.topic}</p>
-                  <a href={article.link} className="mt-auto btn btn-primary">Read more</a>
+                  <a href={article.link} target="_blank" rel="noreferrer" className="mt-auto btn btn-primary">Read more</a>
                 </div>
               </div>
             </div>

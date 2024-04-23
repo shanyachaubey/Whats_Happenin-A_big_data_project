@@ -19,7 +19,7 @@ function Card({ articles }) {
                                 <p className="card-text">Author: {article.author}</p>
                                 <p className="card-text">Rank: {article.rank}</p>
                                 <p className="card-text">Topic: {article.topic}</p>
-                                <a href={article.link} className="btn btn-primary">Read more</a>
+                                <a href={article.link} target="_blank" rel="noreferrer" className="btn btn-primary">Read more</a>
                             </div>
                         </div>
                     </div>
