@@ -7,6 +7,7 @@ import { useLocation } from '../commonUtils/Location.js';
 //import Card from '../mvp/card.js';
 import ParentComponent from './Article_All.js';
 import Loader from '../mvp/loader.js';
+import Insights from './insights.js';
 // Define DisplayArticleData function on the same level as ModalWithDateSelection
 function DisplayArticleData(articles) {
   //if (articles.length > 1) {
@@ -21,6 +22,13 @@ function DisplayArticleData(articles) {
       return "man";
   }
 }
+function insightsStuff(stuff) {
+  //if (articles.length > 1) {
+    console.log("Yoshi", stuff);
+    console.log(Array.isArray(stuff));
+      return Insights({stuff});
+
+  }
 
 function ModalWithDateSelection({ onSubmit }) {
   const [loading, setLoading] = useState(false);
@@ -92,7 +100,9 @@ function ModalWithDateSelection({ onSubmit }) {
        // const articleData= JSON.parse(finalJSONString).articles;
        const articleData = JSON.parse(finalJSONString).articles;
         const responseData = JSON.parse(finalJSONString).data_for_bubble;
-        onSubmit(responseData, oidString, articleData, startDate, endDate, location);
+        const insightsData = JSON.parse(finalJSONString).top_5_insights;
+        console.log("Mario", insightsData);
+        onSubmit(responseData, oidString, articleData, insightsData, startDate, endDate, location);
         
     
       });
@@ -163,5 +173,5 @@ ModalWithDateSelection.propTypes = {
   onSubmit: PropTypes.func.isRequired,
 };
 
-export { DisplayArticleData }; // Export DisplayArticleData function
+export { DisplayArticleData, insightsStuff }; // Export DisplayArticleData function
 export default ModalWithDateSelection;
