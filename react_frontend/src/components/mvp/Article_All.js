@@ -8,15 +8,13 @@ import './Article.css'
 function ParentComponent(article) {
 
 
-    // Conditionally render based on the return value of DisplayArticleData
-    if (article && Array.isArray(article.articles) && article.articles.length > 0 && Array.isArray(article.articles[0])) {
-      console.log("badbing");
+  // Conditionally render based on the return value of DisplayArticleData
+  if (article && Array.isArray(article.articles) && article.articles.length > 0 && Array.isArray(article.articles[0])) {
+    // Access the inner array
+    const innerArray = article.articles[0];
 
-      // Access the inner array
-      const innerArray = article.articles[0];
-
-      return (
-        <div className="container">
+    return (
+      <div className="container">
         <div className="row row-cols-1 row-cols-md-3">
           {innerArray.map((article, index) => (
             <div className="col mb-4" key={index}>
@@ -34,14 +32,14 @@ function ParentComponent(article) {
           ))}
         </div>
       </div>
-      
-      );
+
+    );
   } else {
-      return (
-          <div>
-              
-          </div>
-      );
+    return (
+      <div>
+
+      </div>
+    );
   }
 }
 

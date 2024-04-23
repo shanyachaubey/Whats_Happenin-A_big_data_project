@@ -31,7 +31,7 @@ class BubbleChart extends Component {
         const containerHeight = window.innerHeight * 0.9; // Adjust as needed
         const chartWidth = containerWidth * 1.5; // Increase width by a factor of 1.5
         const chartHeight = containerHeight * 1.5; // Increase height by a factor of 1.5
-   
+
         // Return JSX
         return (
             <div style={{ width: '100%', height: '100%' }}>
@@ -40,8 +40,8 @@ class BubbleChart extends Component {
             </div>
         );
     }
-   
-     
+
+
     renderChart() {
         const { overflow, graph, data, width, legendPercentage, showLegend } = this.props;
         const someFactor = 5.5; // Adjust as needed
@@ -60,11 +60,11 @@ class BubbleChart extends Component {
         const pack = d3.pack()
             .size([bubblesWidth * graph.zoom, bubblesWidth * graph.zoom])
             .padding(-2.5)
-            .radius(function(d) {
+            .radius(function (d) {
                 // Adjust the minimum and maximum size of the bubbles here
                 return Math.max(Math.min(d.value * someFactor, maxBubbleSize), minimumSize);
             });
-            
+
         const root = d3.hierarchy({ children: data })
             .sum(function (d) { return d.value; })
             .sort(function (a, b) { return b.value - a.value; })
@@ -82,15 +82,15 @@ class BubbleChart extends Component {
         }
         // Calculate the maximum radius of the bubbles
         const maxRadius = d3.max(nodes, d => d.r);
-    
+
         // Calculate the required width and height to accommodate the bubbles
         const requiredWidth = bubblesWidth * graph.zoom + maxRadius * 2;
         const requiredHeight = bubblesWidth * graph.zoom + maxRadius * 2;
-    
+
         // Update the width and height of the SVG element
         svg.setAttribute('width', requiredWidth);
         svg.setAttribute('height', requiredHeight);
-    
+
         // Update the transform of the bubble chart group
         d3.select(svg).select(".bubble-chart")
             .attr("transform", `translate(${maxRadius},${maxRadius})`);
@@ -100,7 +100,7 @@ class BubbleChart extends Component {
         const bubbleChart = d3.select(svg).append("g")
             .attr("class", "bubble-chart")
             .attr("transform", function (d) {
-                const translateY = width * graph.offsetY-100;
+                const translateY = width * graph.offsetY - 100;
                 return "translate(" + (width * graph.offsetX) + "," + translateY + ")";
             });
         const node = bubbleChart.selectAll(".node")
@@ -173,7 +173,7 @@ class BubbleChart extends Component {
         node.append("title")
             .text(function (d) { return d.label; });
     }
-    
+
 
     renderBubbles(svg, width, nodes, color) {
         const { graph, bubbleClickFun, valueFont, labelFont } = this.props;
@@ -181,11 +181,10 @@ class BubbleChart extends Component {
             .attr("class", "bubble-chart")
             .attr("transform", function (d) {
                 const translateY = width * graph.offsetY;
-                console.log("TranslateY:", translateY); // Log the translateY value
                 return "translate(" + (width * graph.offsetX) + "," + translateY + ")";
             });
-            
-          
+
+
         const node = bubbleChart.selectAll(".node")
             .data(nodes)
             .enter().append("g")
@@ -309,7 +308,7 @@ class BubbleChart extends Component {
             .attr("x", (d) => { return legendFont.size + 10 })
             .attr("y", 0)
             .text((d) => { return d.label });
-    
+
         // Ensure minimum legend size
         texts.attr("transform", function (d, i) {
             const box = this.getBBox();
@@ -320,9 +319,9 @@ class BubbleChart extends Component {
             const yOffset = 20; // Adjust the offset value as needed
             return `translate(0,${i * (legendFont.size + 10) + yOffset})`;
         });
-        
+
     }
-} 
+}
 
 BubbleChart.propTypes = {
     overflow: PropTypes.bool,

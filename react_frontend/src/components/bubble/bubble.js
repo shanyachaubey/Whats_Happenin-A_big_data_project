@@ -13,7 +13,6 @@ function Bubble({ prop, onBubbleClick }) {
         console.log(`Bubble ${label} is clicked`);
         const topicRequest = new TopicRequest()
         topicRequest.setOid(prop[1])
-        console.log("Prop id is: ", prop[1])
         topicRequest.setTopic(label)
         // Scroll to a new section on the same page when a bubble is clicked
         // Specify the ID of the new section
@@ -25,28 +24,23 @@ function Bubble({ prop, onBubbleClick }) {
         try {
             const client = new UserQueryServiceClient('http://127.0.0.1:1337');
             client.sendTopicResponse(topicRequest, {}, (err, response) => {
-                console.log("Topic Request went before error");
 
                 if (err) {
                     console.error("gRPC Error: ", err.message);
                     console.error("gRPC Status Code: ", err.code);
                     return;
                 }
-                console.log("Topic Request went after error");
 
                 const byteMongoData = new Uint8Array(response.array[0]);
                 const byteMongoArray = Array.from(byteMongoData);
                 const byteMongoString = JSON.stringify(byteMongoArray);
                 const byteMongoObject = JSON.parse(byteMongoString);
                 const finalJSONString = convertTobase64encoded(byteMongoObject)
+                const dataSet = JSON.parse(finalJSONString).articles;
 
-                console.log("Received Topic response data:", finalJSONString)
-                const dataSet= JSON.parse(finalJSONString).articles;
-
-                console.log("2kDemiGod:", dataSet)
                 onBubbleClick(label, dataSet);
             });
-            
+
         } catch (error) {
             console.error('Client Error:', error.code, error.message);
         }
@@ -70,15 +64,15 @@ function Bubble({ prop, onBubbleClick }) {
                 data={bubbleChartData}
                 bubbleClickFun={handleBubbleClick}
                 legendClickFun={handleLegendClick}
-            
+
             />
-           
+
         </div>
     );
 }
 
 Bubble.propTypes = {
-    prop: PropTypes.object.isRequired,
+    prop: PropTypes.array.isRequired,
     onBubbleClick: PropTypes.func.isRequired
 };
 

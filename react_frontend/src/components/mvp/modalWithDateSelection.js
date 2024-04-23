@@ -8,27 +8,24 @@ import { useLocation } from '../commonUtils/Location.js';
 import ParentComponent from './Article_All.js';
 import Loader from '../mvp/loader.js';
 import Insights from './insights.js';
+
+
 // Define DisplayArticleData function on the same level as ModalWithDateSelection
 function DisplayArticleData(articles) {
   //if (articles.length > 1) {
-    console.log("Princess Peach", articles);
-    if (Array.isArray(articles) && articles.length > 1) {
-      console.log("Princess Peach2", articles);
-      
-      return ParentComponent(articles);
+  if (Array.isArray(articles) && articles.length > 1) {
+    return ParentComponent(articles);
 
   } else {
-      // If articles is not an array or its length is not greater than 1, return "superman"
-      return "man";
+    // If articles is not an array or its length is not greater than 1, return "superman"
+    return "man";
   }
 }
-function insightsStuff(stuff) {
-  //if (articles.length > 1) {
-    console.log("Yoshi", stuff);
-    console.log(Array.isArray(stuff));
-      return Insights({stuff});
 
-  }
+function insightsStuff(stuff) {
+  return Insights({ stuff });
+
+}
 
 function ModalWithDateSelection({ onSubmit }) {
   const [loading, setLoading] = useState(false);
@@ -36,10 +33,10 @@ function ModalWithDateSelection({ onSubmit }) {
   const [endDate, setEndDate] = useState('');
   const [showModal, setShowModal] = useState(false);
   const { location } = useLocation();
-  
+
   useEffect(() => {
     if (location) {
-      console.log('Received data in modalWithDateSelection:', location);
+      console.log('Process triggered for: ', location);
     }
   }, [location]);
 
@@ -53,31 +50,24 @@ function ModalWithDateSelection({ onSubmit }) {
 
   const handleSubmit = () => {
     setLoading(true);
-    // Here you can perform any actions with the selected dates
-    console.log('Selected Start Date:', startDate);
-    console.log('Selected End Date:', endDate);
 
     // Your code to submit form data here
     const userQuery = new UserQuery();
-    userQuery.setDateStart('2024-04-08');
-    userQuery.setDateEnd('2024-04-15');
-    userQuery.setLocation('Boulder, Colorado');
+    userQuery.setDateStart(startDate);
+    userQuery.setDateEnd(endDate);
+    userQuery.setLocation(location);
 
     // Initialize gRPC client.
     try {
       const client = new UserQueryServiceClient('http://127.0.0.1:1337');
-      console.log(client);
 
       client.startSession(userQuery, {}, (err, response) => {
-       
-        console.log("Request went before error");
 
         if (err) {
           console.error("gRPC Error: ", err.message);
           console.error("gRPC Status Code: ", err.code);
           return;
         }
-        console.log("Request went after error");
 
         const oidString = response.array[0];
         const byteMongoData = new Uint8Array(response.array[1]);
@@ -88,23 +78,15 @@ function ModalWithDateSelection({ onSubmit }) {
         const base64String = convertTobase64encoded(byteMongoObject);
         const base64Data = JSON.parse(base64String).oidResponse;
         const finalJSONString = convertToJSON(base64Data);
-        
-          // Handle response
-          setLoading(false); // Set loading to false when data fetching completes
-      
-    
-        console.log("Received OID data:", oidString);
-        console.log("Received response data:", finalJSONString);
 
-        // Update articleData state
-       // const articleData= JSON.parse(finalJSONString).articles;
-       const articleData = JSON.parse(finalJSONString).articles;
+        // Handle response
+        setLoading(false); // Set loading to false when data fetching completes
+        const articleData = JSON.parse(finalJSONString).articles;
         const responseData = JSON.parse(finalJSONString).data_for_bubble;
         const insightsData = JSON.parse(finalJSONString).top_5_insights;
-        console.log("Mario", insightsData);
         onSubmit(responseData, oidString, articleData, insightsData, startDate, endDate, location);
-        
-    
+
+
       });
     } catch (error) {
       console.error('Client Error:', error.code, error.message);
@@ -128,11 +110,11 @@ function ModalWithDateSelection({ onSubmit }) {
 
   return (
     <div>
-     {!loading && (
-    <button className="btn btn-primary" onClick={() => setShowModal(true)} style={{ padding: '0', border: 'none', background: 'none', width: '60px', height: '70px', paddingTop: '20px', paddingBottom: '-30px' }}>
-      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSLGHzaEkIlKtfis5qQIjLi9KVpgyTNa5AQT-swB7whAw&s" alt="Open Modal" style={{ width: '100%', height: '100%' }} />
-    </button>
-  )}
+      {!loading && (
+        <button className="btn btn-primary" onClick={() => setShowModal(true)} style={{ padding: '0', border: 'none', background: 'none', width: '60px', height: '70px', paddingTop: '20px', paddingBottom: '-30px' }}>
+          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSLGHzaEkIlKtfis5qQIjLi9KVpgyTNa5AQT-swB7whAw&s" alt="Open Modal" style={{ width: '100%', height: '100%' }} />
+        </button>
+      )}
 
       {showModal && (
         <div className="modal" tabIndex="-1" role="dialog" style={{ display: 'block' }}>
@@ -164,7 +146,7 @@ function ModalWithDateSelection({ onSubmit }) {
       )}
       {loading && <Loader />}
     </div>
-   
+
   );
 
 }

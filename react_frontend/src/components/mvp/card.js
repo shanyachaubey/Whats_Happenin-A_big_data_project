@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 function Card({ articles }) {
-    console.log('Received articles prop:', articles); 
     if (!articles || articles.length === 0) {
         return null; // Return null if articles is undefined or empty
     }
