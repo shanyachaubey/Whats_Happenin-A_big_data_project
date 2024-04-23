@@ -4,23 +4,25 @@ from bson import ObjectId
 from pydantic import BaseModel
 from typing import List, Optional
 from functions import process_shrink_data, get_insights
+from model_loader import lda, openaiclient
 import json
 import os
 
 
 # Connect to MongoDB
-# namespace = os.getenv("NAMESPACE", "default")
-# mongodb_uri = f"mongodb://root:password@mongodb-0.mongo.{namespace}.svc.cluster.local:27017/admin"
-# client = MongoClient(mongodb_uri)
-# print(client)
+namespace = os.getenv("NAMESPACE", "default")
+mongodb_uri = f"mongodb://root:password@mongo.{namespace}.svc.cluster.local:27017/admin"
+mongodb_test_uri = f"mongodb://root:password@localhost:27018/admin"
 
-# db = client['userquery']
-# collection = db['sessions']
+# client = MongoClient(mongodb_uri)
+client = MongoClient(mongodb_uri)
+db = client['userquery']
+collection = db['sessions']
 
 #Shanya uncomment below for local testing
-client = MongoClient('mongodb://localhost:27017/')
-db = client['local']
-collection = db['test']
+# client = MongoClient('mongodb://localhost:27017/')
+# db = client['local']
+# collection = db['test']
 
 pipeline = [
     {
@@ -194,7 +196,7 @@ async def update_mongo(oid: str = Query(..., description="Object ID of the docum
             "top_24_all_cat": top_x_all_cat,
             "top_24_by_topics": top_x_by_topics,
             "data_for_bubble": topics_proportion,
-            "top_5_insights": top_x_insights
+            "top_5_insights": top_x_insights,
         }
     }
     collection.update_one({"_id": ObjectId(oid)}, update_query)  

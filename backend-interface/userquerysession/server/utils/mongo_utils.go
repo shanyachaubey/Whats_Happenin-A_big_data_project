@@ -17,7 +17,7 @@ import (
 )
 
 func getCollection() *mongo.Collection {
-	uri := fmt.Sprintf("mongodb://root:password@mongodb-0.mongo.%s.svc.cluster.local:27017/admin", namespace)
+	uri := fmt.Sprintf("mongodb://root:password@mongo.%s.svc.cluster.local:27017/admin", namespace)
 	// local testing uri
 	// uri := fmt.Sprintf("mongodb://root:password@localhost:27018/admin")
 	clientOptions := options.Client().ApplyURI(uri).SetConnectTimeout(15 * time.Second)
@@ -84,6 +84,7 @@ func GetDataFromMongo(ctx context.Context, oid primitive.ObjectID) ([]byte, erro
 	// Construct output format
 	output := make(map[string]interface{})
 	output["data_for_bubble"] = result.DataForBubble
+	output["top_5_insights"] = result.Top5Insights
 
 	var articles []map[string]string
 	for _, index := range result.TopXAllCat {

@@ -7,8 +7,10 @@ import (
 	"time"
 
 	pb "github.com/shanyachaubey/Whats_Happenin-A_big_data_project/backend-interface/userquerysession/proto"
+	"github.com/shanyachaubey/Whats_Happenin-A_big_data_project/backend-interface/userquerysession/server/health"
 	"github.com/shanyachaubey/Whats_Happenin-A_big_data_project/backend-interface/userquerysession/server/utils"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/keepalive"
 	"google.golang.org/grpc/reflection"
 )
@@ -28,8 +30,8 @@ func main() {
 
 	namespace := os.Getenv("NAMESPACE")
 	if namespace == "" {
-		log.Printf("Namespace environment variable is not set")
-		os.Exit(1)
+		log.Printf("Namespace environment variable is not set, now set to default")
+		namespace = "default"
 	}
 
 	log.Printf("Namespace defined as: %s", namespace)
@@ -43,6 +45,7 @@ func main() {
 	)
 
 	pb.RegisterUserQueryServiceServer(s, &Server{})
+	grpc_health_v1.RegisterHealthServer(s, &health.Server{})
 	reflection.Register(s)
 
 	if err := s.Serve(lis); err != nil {

@@ -11,6 +11,7 @@ from nltk.tokenize import RegexpTokenizer
 from nltk.stem.wordnet import WordNetLemmatizer
 nltk.download('punkt')
 nltk.download('wordnet')
+from model_loader import lda, openaiclient
 
 #General Data processing Modules
 import pandas as pd
@@ -328,11 +329,6 @@ def process_shrink_data(articles, location):
                                       for frontend to use.
     
     """
-    
-    # Loading the gensim model 
-    lda = LdaModel.load('model.pkl')
-    
-
     location = location
     processed_articles = []
     
@@ -428,12 +424,7 @@ def get_insights(summaries):
     Returns:
         insights (List(str)): List of string of the insights from each article
     """
-
-    load_dotenv()
-
-    client = OpenAI()
-
-    response = client.chat.completions.create(
+    response = openaiclient.chat.completions.create(
     model="gpt-4-turbo",
     messages=[
         {
@@ -458,7 +449,5 @@ def get_insights(summaries):
     string_response = response.choices[0].message.content
 
     insights = string_response.split('^^^')
-    insights = json.dumps(insights)
-
     return insights
 

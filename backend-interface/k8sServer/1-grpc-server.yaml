@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: grpc-server-deployment
 spec:
-  replicas: 2 # Adjust the number of replicas as needed
+  replicas: 1 # Adjust the number of replicas as needed
   selector:
     matchLabels:
       app: grpc-server
@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: grpc-server
-          image: anakin1612/grpc-server:macos_4 # v4.0 is the aws image, last stable version: {e0, prodBeta00=arm)
+          image: anakin1612/grpc-server:macos_0x00p # v4.0 is the aws image, last stable version: {e0, prodBeta00=arm)
           ports:
             - containerPort: 50051
           resources:

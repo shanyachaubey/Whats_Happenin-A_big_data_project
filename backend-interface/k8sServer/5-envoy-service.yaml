@@ -14,5 +14,4 @@ spec:
       name: admin
       port: 8888
       targetPort: 8888
-  type: ClusterIP
-
+  type: LoadBalancer

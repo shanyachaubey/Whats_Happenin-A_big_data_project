@@ -11,79 +11,70 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-// Function to fetch data from Newscatcher API based on query parameters
-func FetchDataFromAPI(query []string) (interface{}, error) {
-	// var processedArticles models.Articles
+// FetchDataFromAPI fetches data from Newscatcher API based on query parameters
+func FetchDataFromAPI(query []string) ([]interface{}, error) {
+	const apiURL = "https://api.newscatcherapi.com/v2/search"
+	const apiKey = "kQ1Wu1fjWRZnriofBhD3ndcvOErvzkHld8UF5LttdNs"
 
-	// Define the API endpoint
-	apiURL := "https://api.newscatcherapi.com/v2/search"
+	var allArticles []interface{}
+	client := http.Client{}
 
-	// Initialize allArticles map to store articles from multiple pages
-	allArticles := make(map[string]interface{})
-	page := 1
+	location := query[2]
+	startDate := query[0]
+	endDate := query[1]
 
-	for page < 6 {
-		// Define the query parameters
-		queryParams := url.Values{}
-		queryParams.Set("from", query[0])
-		queryParams.Set("to", query[1])
-		queryParams.Set("q", query[2])
-		queryParams.Set("lang", "en")
-		queryParams.Set("countries", "US")
-		queryParams.Set("ranked_only", "true")
-		queryParams.Set("sort_by", "rank")
-		queryParams.Set("page_size", "100")
-		queryParams.Set("page", fmt.Sprintf("%d", page))
+	for page := 1; page < 6; page++ {
+		queryParams := url.Values{
+			"from":        {startDate},
+			"to":          {endDate},
+			"q":           {location},
+			"lang":        {"en"},
+			"countries":   {"US"},
+			"ranked_only": {"true"},
+			"sort_by":     {"rank"},
+			"page_size":   {"100"},
+			"page":        {fmt.Sprintf("%d", page)},
+		}
 
-		// Encode the query parameters
 		fullURL := apiURL + "?" + queryParams.Encode()
 
-		// Create a new HTTP request
 		req, err := http.NewRequest("GET", fullURL, nil)
 		if err != nil {
-			return map[string]interface{}{}, status.Errorf(
+			return make([]interface{}, 0), status.Errorf(
 				codes.Internal,
 				fmt.Sprintf("Error creating request: %v", err))
 		}
 
-		// Set the API key header
-		req.Header.Set("x-api-key", "kQ1Wu1fjWRZnriofBhD3ndcvOErvzkHld8UF5LttdNs")
-
-		// Send the HTTP request
-		client := http.Client{}
+		req.Header.Set("x-api-key", apiKey)
 		resp, err := client.Do(req)
 		if err != nil {
-			return map[string]interface{}{}, status.Errorf(
+			return make([]interface{}, 0), status.Errorf(
 				codes.Internal,
 				fmt.Sprintf("Error sending request: %v", err))
 		}
-
 		defer resp.Body.Close()
 
 		var result map[string]interface{}
 		err = json.NewDecoder(resp.Body).Decode(&result)
 		if err != nil {
-			return map[string]interface{}{}, fmt.Errorf("Error decoding response: %v", err)
+			return make([]interface{}, 0), fmt.Errorf("Error decoding response: %v", err)
 		}
 
-		if len(allArticles) == 0 {
-			allArticles = result
-		} else {
-			articles, ok := result["articles"].([]interface{})
-			if !ok {
-				return map[string]interface{}{}, fmt.Errorf("Error: articles is not a slice")
-			}
-			allArticles["articles"] = append(allArticles["articles"].([]interface{}), articles...)
+		articles, ok := result["articles"].([]interface{})
+		if !ok {
+			return make([]interface{}, 0), fmt.Errorf("error: articles is not a slice")
 		}
-		page++
-		if page > int(result["total_pages"].(float64)) {
+
+		allArticles = append(allArticles, articles...)
+
+		if page >= int(result["total_pages"].(float64)) {
 			break
 		}
+
 		// Wait for 1 second between each call
 		time.Sleep(1 * time.Second)
 	}
 
-	articles := allArticles["articles"]
 	fmt.Println("Sanity Check")
-	return articles, nil
+	return allArticles, nil
 }
