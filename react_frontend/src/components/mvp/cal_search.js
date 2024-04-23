@@ -36,6 +36,7 @@ function CalSearch() {
   const handleBubbleClick = (topic,dataSet) => {
     setSelectedTopic(topic);
     setDataSet(dataSet);
+    setinsightsData(null);
   };
   const renderParentComponent = () => {
     setDataSet(null);
@@ -80,7 +81,9 @@ console.log("Hello",selectedLocation);
     <div className="col-md-12"> {/* Adjust the column width */}
   
     <div className="col text-center"> {/* Center align the content */}
-
+    <div style={{ fontFamily: 'Montserrat', color: 'black', backgroundColor: 'white', fontSize: '70px', fontWeight: 'bolder', borderRadius: '20px', padding: '20px' }}>
+{bubbleData !== null && dataSet ===null && insightsData!==null && selectedLocation==='Boulder, Colorado' && <Insights stuff={{insightsData}} />}
+</div>
     {bubbleData !== null && dataSet ===null && selectedLocation &&
       <div style={{ fontFamily: 'Montserrat', color: 'black', backgroundColor: 'white', fontSize: '70px', fontWeight: 'bolder', borderRadius: '20px', padding: '20px' }}>
       <h2 style={{fontFamily: 'Montserrat', fontWeight: 'bolder'}}>{"All Top Articles in " + selectedLocation}</h2>
@@ -88,9 +91,7 @@ console.log("Hello",selectedLocation);
   </div>
   
 }
-<div style={{ fontFamily: 'Montserrat', color: 'black', backgroundColor: 'white', fontSize: '70px', fontWeight: 'bolder', borderRadius: '20px', padding: '20px' }}>
-{bubbleData !== null && dataSet ===null && <Insights stuff={{insightsData}} />}
-</div>
+
 
       {bubbleData !== null && dataSet ===null && <ParentComponent articles={[articleData]} />
 }
@@ -104,6 +105,7 @@ console.log("Hello",selectedLocation);
 )}
       
       {bubbleData !== null && dataSet !==null && <ArticleTopic articles={[dataSet]} />  }
+      
       </div>
     </div>
   </div>
